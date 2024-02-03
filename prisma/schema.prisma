@@ -2,23 +2,106 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["driverAdapters"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 
-    // Do not use foreign keys (PlanetScale does not support them)
-    relationMode = "prisma"
+  // Do not use foreign keys (PlanetScale does not support them)
+  relationMode = "prisma"
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model User {
+  id          String   @id @unique @default(cuid())
+  email       String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String?
+  lastName    String?
+  phoneNumber String?
 
-    @@index([name])
+  @@index([id])
+}
+
+model Business {
+  id                  String   @id @unique @default(cuid())
+  ownerID             String
+  name                String
+  link                String
+  businessDescription String?
+  businessLocation    String?
+  businessLogoURL     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([id])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  HELPER
+  VIEWER
+}
+
+model TeamMember {
+  id         String   @id @unique @default(cuid())
+  userID     String
+  businessID String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  role       Role
+
+  @@index([id])
+}
+
+enum EventType {
+  VIDEO_CALL
+  IN_PERSON
+  VOICE_CALL
+}
+
+enum EventState {
+  LIVE
+  OFF
+  DRAFT
+}
+
+model Event {
+  id         String     @id @unique @default(cuid())
+  businessID String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  name       String
+  type       EventType
+  state      EventState
+
+  @@index([id])
+}
+
+model Client {
+  id          String   @id @unique @default(cuid())
+  businessID  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  email       String?
+  phoneNumber String?
+  name        String?
+  lastName    String?
+
+  @@index([id])
+}
+
+model BookedEvent {
+  id        String   @id @unique @default(cuid())
+  eventID   String
+  clientID  String
+  dueDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([id])
 }
