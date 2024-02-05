@@ -75,7 +75,7 @@ const config = {
       },
       dropShadow: {
         xs: "0px 1px 2px rgba(16, 24, 40, 0.02)",
-        "custom-lg":
+        customLg:
           "0px 12px 16px -4px rgba(16, 24, 40, 0.5), 0px 4px 6px -2px rgba(16, 24, 40, 0.5)",
       },
       keyframes: {
