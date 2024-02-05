@@ -1,7 +1,11 @@
+"use client";
+
+import { useEventData } from "@/context/useEventData";
 import React from "react";
 
 const Page = () => {
-  return <div>Page</div>;
+  const { currentWindow } = useEventData();
+  return <div>{currentWindow}</div>;
 };
 
 export default Page;

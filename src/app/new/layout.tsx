@@ -1,7 +1,10 @@
 "use client";
 
+import EditEventDetails from "@/components/edit-event-details";
 import EditEventItems from "@/components/edit-event-items";
 import { Button } from "@/components/ui/button";
+import { EditEventWindow } from "@/context/event-data-context";
+import { useEventData } from "@/context/useEventData";
 import { api } from "@/trpc/react";
 import {
   Check,
@@ -19,11 +22,14 @@ interface Props {
 }
 const Layout = ({ children }: Props) => {
   const router = useRouter();
+  const { currentWindow, changeWindow } = useEventData();
 
+  // Events
   const handleClick = () => {
     createNewEvent();
   };
 
+  // API Endpoints
   const {
     isSuccess,
     isLoading,
@@ -38,7 +44,12 @@ const Layout = ({ children }: Props) => {
   });
 
   return (
-    <div className="flex h-screen">
+    <div className="relative flex h-screen">
+      <div
+        className={`absolute left-0 top-0 flex h-screen w-[440px] flex-col border-r bg-white transition-all ${currentWindow !== EditEventWindow.HOME ? "translate-x-[0px]" : "translate-x-[-440px]"}`}
+      >
+        <EditEventDetails />
+      </div>
       <aside className="flex w-[440px] flex-col border-r shadow-lg">
         <div className="space-y-2 border-b px-8 py-4">
           <div className="flex">
@@ -61,15 +72,11 @@ const Layout = ({ children }: Props) => {
           <h1 className="text-3xl font-medium">Edit Event</h1>
         </div>
 
-        {/* ---- side menu start ---- */}
-
         <div className="flex-1 overflow-scroll px-4 py-0">
           <div className="flex flex-col">
             <EditEventItems />
           </div>
         </div>
-
-        {/* ---- side menu end ---- */}
 
         <div className="space-y-2 border-t px-8 py-4">
           <div className="flex w-full gap-2">

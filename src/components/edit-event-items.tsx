@@ -1,5 +1,7 @@
-import React, { ReactNode } from "react";
-import { Button } from "./ui/button";
+"use client";
+
+import { EditEventWindow } from "@/context/event-data-context";
+import { useEventData } from "@/context/useEventData";
 import {
   BellRing,
   CalendarDays,
@@ -10,9 +12,15 @@ import {
 } from "lucide-react";
 
 const EditEventItems = () => {
+  const { currentWindow, changeWindow } = useEventData();
   return (
     <>
-      <button className="flex items-center gap-2 border-b py-6 hover:bg-brand-25">
+      <button
+        onClick={() => {
+          changeWindow(EditEventWindow.EDIT_INFORMATION);
+        }}
+        className="flex items-center gap-2 border-b py-6 hover:bg-brand-25"
+      >
         <div className="flex gap-2">
           <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
             <Pen className="h-5 w-5" />
@@ -28,7 +36,12 @@ const EditEventItems = () => {
         </div>
       </button>
 
-      <button className="flex items-center gap-2 border-b py-6 hover:bg-brand-25">
+      <button
+        onClick={() => {
+          changeWindow(EditEventWindow.SCHEDULE_SETTINGS);
+        }}
+        className="flex items-center gap-2 border-b py-6 hover:bg-brand-25"
+      >
         <div className="flex gap-2">
           <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
             <CalendarDays className="h-5 w-5" />
@@ -44,7 +57,12 @@ const EditEventItems = () => {
         </div>
       </button>
 
-      <button className="flex items-center gap-2 border-b py-6 hover:bg-brand-25">
+      <button
+        onClick={() => {
+          changeWindow(EditEventWindow.PAYMENT_OPTIONS);
+        }}
+        className="flex items-center gap-2 border-b py-6 hover:bg-brand-25"
+      >
         <div className="flex gap-2">
           <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
             <CreditCard className="h-5 w-5" />
@@ -62,7 +80,12 @@ const EditEventItems = () => {
         </div>
       </button>
 
-      <button className="flex items-center gap-2 border-b py-6 hover:bg-brand-25">
+      <button
+        onClick={() => {
+          changeWindow(EditEventWindow.BOOKING_OPTIONS);
+        }}
+        className="flex items-center gap-2 border-b py-6 hover:bg-brand-25"
+      >
         <div className="flex gap-2">
           <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
             <Subtitles className="h-5 w-5" />
@@ -78,7 +101,12 @@ const EditEventItems = () => {
         </div>
       </button>
 
-      <button className="flex items-center gap-2 py-6 hover:bg-brand-25">
+      <button
+        onClick={() => {
+          changeWindow(EditEventWindow.REMIDNERS);
+        }}
+        className="flex items-center gap-2 py-6 hover:bg-brand-25"
+      >
         <div className="flex gap-2">
           <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
             <BellRing className="h-5 w-5" />
