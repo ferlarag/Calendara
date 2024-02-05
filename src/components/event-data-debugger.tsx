@@ -2,8 +2,11 @@
 
 import { type ReactNode } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEventData } from "@/context/useEventData";
 
 const EventDataDebugger = () => {
+  const { eventInformation } = useEventData();
+
   return (
     <div className="fixed right-2 top-2 z-20 flex w-[800px] flex-col rounded-md border bg-white">
       <Tabs defaultValue="state" className="w-full">
@@ -18,7 +21,24 @@ const EventDataDebugger = () => {
         </div>
         <TabsContent value="state">
           <div className="max-h-[calc(100vh-100px)] overflow-scroll px-4 py-2">
-            All your data here
+            <h3 className="text-lg font-semibold text-zinc-800">
+              Event Information
+            </h3>
+            <ul>
+              {Object.entries(eventInformation).map(([key, value]) => (
+                <li className="flex w-full gap-2" key={key}>
+                  <p className="flex-1 truncate font-mono text-green-500">
+                    {key}
+                  </p>
+                  <p className="flex-1 truncate font-mono text-zinc-400">
+                    {typeof value}
+                  </p>
+                  <p className="flex-1 truncate font-mono text-zinc-800">
+                    {JSON.stringify(value)}
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
         </TabsContent>
         <TabsContent className="mt-0" value="dataStructure">
