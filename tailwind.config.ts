@@ -1,13 +1,13 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -27,6 +27,21 @@ const config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+        },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          "25": "hsl(var(--brand-25))",
+          "50": "hsl(var(--brand-50))",
+          "100": "hsl(var(--brand-100))",
+          "200": "hsl(var(--brand-200))",
+          "300": "hsl(var(--brand-300))",
+          "400": "hsl(var(--brand-400))",
+          "500": "hsl(var(--brand-500))",
+          "600": "hsl(var(--brand-600))",
+          "700": "hsl(var(--brand-700))",
+          "800": "hsl(var(--brand-800))",
+          "900": "hsl(var(--brand-900))",
+          "950": "hsl(var(--brand-950))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -58,6 +73,11 @@ const config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      dropShadow: {
+        xs: "0px 1px 2px rgba(16, 24, 40, 0.02)",
+        customLg:
+          "0px 12px 16px -4px rgba(16, 24, 40, 0.5), 0px 4px 6px -2px rgba(16, 24, 40, 0.5)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -75,6 +95,6 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;

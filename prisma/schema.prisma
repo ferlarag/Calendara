@@ -14,14 +14,24 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum DateFormat {
+  MMDDYY
+  MMDDYYYY
+  DDMMYY
+  DDMMYYYY
+}
+
 model User {
-  id          String   @id @unique @default(cuid())
-  email       String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  name        String?
-  lastName    String?
-  phoneNumber String?
+  id            String   @id @unique @default(cuid())
+  email         String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String?
+  lastName      String?
+  phoneNumber   String?
+  timezone      String?
+  militaryTime  Boolean  @default(true)
+  preferredLang String?
 
   @@index([id])
 }
@@ -32,7 +42,8 @@ model Business {
   name                String
   link                String
   businessDescription String?
-  businessLocation    String?
+  location            String?
+  locationDescription String?
   businessLogoURL     String?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
@@ -58,28 +69,127 @@ model TeamMember {
   @@index([id])
 }
 
-enum EventType {
-  VIDEO_CALL
-  IN_PERSON
-  VOICE_CALL
-}
-
 enum EventState {
   LIVE
   OFF
   DRAFT
 }
 
+enum EventVisibility {
+  PUBLIC
+  LINK_ONLY
+}
+
+enum DateRangeAvailability {
+  INDEFINETLY_FUTURE
+  WITHING_DATES
+  DAYS_IN_FUTURE
+}
+
+enum DateRangeAvailabilityInTheFuture {
+  WEEK_DAYS
+  CALENDAR_DAYS
+}
+
+enum EventColors {
+  LIGHT_BLUE_SKY
+  GREEN_ELECTRIC
+  YELLOW_SUNSHINE
+  ORANGE_PEACH
+  VIOLET_MARKER
+  PINK_CANDY
+}
+
 model Event {
-  id         String     @id @unique @default(cuid())
-  businessID String
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  name       String
-  type       EventType
-  state      EventState
+  id                               String                           @id @unique @default(cuid())
+  businessID                       String
+  createdAt                        DateTime                         @default(now())
+  updatedAt                        DateTime                         @updatedAt
+  // Event information
+  name                             String
+  color                            EventColors
+  link                             String                           @unique
+  duration                         Int                              @default(30) //in minutes 
+  description                      String?
+  locations                        Json?
+  state                            EventState
+  visibility                       EventVisibility                  @default(PUBLIC)
+  // Schedule Settings
+  pickingRange                     DateRangeAvailability            @default(INDEFINETLY_FUTURE)
+  availableFrom                    DateTime?
+  avialableUntil                   DateTime?
+  dateRangeAvailabilityInTheFuture DateRangeAvailabilityInTheFuture @default(CALENDAR_DAYS)
+  availableFor                     Int?
+  scheduleID                       String?
+  minutesBeforeNextEvent           Int                              @default(10)
+  minutesAfterPreviousEvent        Int                              @default(10)
+  maxNumberOfEventsPerDay          Int?                             @default(12)
+  minNoticeHours                   Int                              @default(24)
+  availabilitySlotsSpacingMinutes  Int                              @default(20)
+  includeHolidays                  Boolean                          @default(true)
+  schedule                         Json?
+  // Payment Options
+  isPayedEvent                     Boolean                          @default(false)
+  requireOnlinePayment             Boolean                          @default(true)
+  showPricing                      Boolean                          @default(true)
+  price                            Int?
+  paymentOptions                   Json?
+  // Booking Options
+  askForName                       Boolean                          @default(true)
+  askForLastName                   Boolean                          @default(true)
+  askForEmail                      Boolean                          @default(true)
+  askForNumber                     Boolean                          @default(true)
+  questions                        Json?
+  // Reminders and notifications
+  requestUserForConfirmation       Boolean                          @default(true)
+  requestConfirmationHours         Int?                             @default(24)
+  remindOneDayBefore               Boolean                          @default(true)
+  remindTwoDaysBefore              Boolean                          @default(false)
+  remindOneWeekBefore              Boolean                          @default(true)
+  remindTwoWeekBefore              Boolean                          @default(false)
+  remindOneMonthBefore             Boolean                          @default(false)
+  attachments                      Json?
 
   @@index([id])
+}
+
+model Schedule {
+  id             String @id @unique @default(cuid())
+  eventId        String
+  timezone       String
+  mondayFrom     Int
+  mondayUntil    Int
+  tuesdayFrom    Int
+  tuesdayUntil   Int
+  wednesdayFrom  Int
+  wednesdayUntil Int
+  thursdayFrom   Int
+  thursdayUntil  Int
+  fridayFrom     Int
+  fridayUntil    Int
+  saturdayFrom   Int
+  saturdayUntil  Int
+  sundayFrom     Int
+  sundayUntil    Int
+  specialDates   Json?
+
+  @@index([id])
+}
+
+model Holidays {
+  id           String @id @unique @default(cuid())
+  businessId   String
+  specialDates Json?
+
+  @@index([id])
+}
+
+enum PaymentTypes {
+  BANCO_AGRICOLA
+  STRIPE
+  PAYPAL
+  BANK_TRANSFER
+  CASH
 }
 
 model Client {
@@ -95,13 +205,39 @@ model Client {
   @@index([id])
 }
 
+enum BookedEventState {
+  CANCELLED
+  RESCHEDULED
+  PENDING
+  FINISHED
+}
+
+enum NotificationStatus {
+  NONE
+  ONE_HOUR
+  HALF_DAY
+  ONE_DAY
+  TWO_DAYS
+  THREE_DAYS
+  FOUR_DAYS
+  FIVE_DAYS
+  SIX_DAYS
+  ONE_WEEK
+  TWO_WEEKS
+  ONE_MONTH
+}
+
 model BookedEvent {
-  id        String   @id @unique @default(cuid())
-  eventID   String
-  clientID  String
-  dueDate   DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String             @id @unique @default(cuid())
+  businessID       String
+  eventID          String
+  clientID         String
+  dueDate          DateTime
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  state            BookedEventState   @default(PENDING)
+  lastNotification NotificationStatus @default(NONE)
+  nextNotification NotificationStatus @default(NONE)
 
   @@index([id])
 }
