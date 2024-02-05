@@ -91,6 +91,15 @@ enum DateRangeAvailabilityInTheFuture {
   CALENDAR_DAYS
 }
 
+enum EventColors {
+  LIGHT_BLUE_SKY
+  GREEN_ELECTRIC
+  YELLOW_SUNSHINE
+  ORANGE_PEACH
+  VIOLET_MARKER
+  PINK_CANDY
+}
+
 model Event {
   id                               String                           @id @unique @default(cuid())
   businessID                       String
@@ -98,6 +107,7 @@ model Event {
   updatedAt                        DateTime                         @updatedAt
   // Event information
   name                             String
+  color                            EventColors
   link                             String                           @unique
   duration                         Int                              @default(30) //in minutes 
   description                      String?
