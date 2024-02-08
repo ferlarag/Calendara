@@ -5,7 +5,7 @@ export type EventInformationAction =
   | { type: "CHANGE_COLOR"; newColor: EventColors }
   | { type: "CHANGE_NAME"; newName: string }
   | { type: "CHANGE_URL"; newUrl: string }
-  | { type: "CHANGE_DURATION"; newDuration: number }
+  | { type: "CHANGE_DURATION"; newDuration: string }
   | { type: "ADD_LOCATION" }
   | { type: "UPDATE_LOCATION" }
   | { type: "CHANGE_DESCRIPTION"; newDescription: string };

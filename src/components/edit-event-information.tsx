@@ -1,5 +1,5 @@
 import { useEventData } from "@/context/useEventData";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -24,6 +24,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 const EditEventInformation = () => {
   const {
@@ -33,30 +34,46 @@ const EditEventInformation = () => {
     currentWindow,
     changeName,
     changeEventLink,
+    changeDuration,
     changeDescription,
   } = useEventData();
 
   const formSchema = z.object({
     color: z.string(),
     name: z.string(),
-    link: z.string(),
-    duration: z.number(),
-    description: z.string().optional(),
+    link: z
+      .string()
+      .min(3, { message: "The link must be at least 3 characters long" })
+      .trim()
+      .regex(
+        /^[a-z0-9-]+$/,
+        "The custom URL must only contain lowercase letters, numbers, and hyphens",
+      )
+      .transform((str) => str.toLowerCase().replace(/\s+/g, "-")),
+    duration: z.string(),
+    description: z.string(),
     locations: z.array(
       z.object({
         id: z.string(),
         type: z.enum(["zoom", "phone", "googleMeets", "inPerson"]),
-        location: z.string(),
-        phoneCountryCode: z.string(),
-        phoneNumber: z.string(),
-        instructions: z.string(),
+        location: z.string().optional(),
+        phoneCountryCode: z.string().optional(),
+        phoneNumber: z.string().optional(),
+        instructions: z.string().optional(),
       }),
     ),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      color: eventInformation.color,
+      description: eventInformation.description,
+      name: eventInformation.name,
+      link: eventInformation.link,
+      duration: eventInformation.duration,
+      locations: eventInformation.locations,
+    },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -96,26 +113,39 @@ const EditEventInformation = () => {
                   <FormField
                     control={form.control}
                     name="color"
-                    render={({ field }) => (
+                    render={({ field: selectField }) => (
                       <FormItem>
                         <Select
                           onValueChange={(color) => {
-                            field.onChange(color);
+                            selectField.onChange(color);
                             changeEventColor(color as EventColors);
                           }}
-                          defaultValue={field.value}
+                          value={selectField.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="w-[75px]">
+                            <SelectTrigger className="w-[65px]">
                               <SelectValue placeholder="Select a color" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.entries(EventColors).map(([key, value]) => (
-                              <SelectItem key={key} value={key}>
-                                {value}
-                              </SelectItem>
-                            ))}
+                            <SelectItem value={EventColors.LIGHT_BLUE_SKY}>
+                              <div className="h-5 w-5 rounded-full bg-[#77C8FF]" />
+                            </SelectItem>
+                            <SelectItem value={EventColors.GREEN_ELECTRIC}>
+                              <div className="h-5 w-5 rounded-full bg-[#B0ED47]" />
+                            </SelectItem>
+                            <SelectItem value={EventColors.YELLOW_SUNSHINE}>
+                              <div className="h-5 w-5 rounded-full bg-[#FFD920]" />
+                            </SelectItem>
+                            <SelectItem value={EventColors.ORANGE_PEACH}>
+                              <div className="h-5 w-5 rounded-full bg-[#FEA96C]" />
+                            </SelectItem>
+                            <SelectItem value={EventColors.VIOLET_MARKER}>
+                              <div className="h-5 w-5 rounded-full bg-[#B59CF7]" />
+                            </SelectItem>
+                            <SelectItem value={EventColors.PINK_CANDY}>
+                              <div className="h-5 w-5 rounded-full bg-[#FF82EC]" />
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -123,6 +153,7 @@ const EditEventInformation = () => {
                   />
                   <FormControl>
                     <Input
+                      defaultValue={eventInformation.name}
                       placeholder="My awesome event"
                       onChange={(e) => {
                         field.onChange(e);
@@ -143,10 +174,17 @@ const EditEventInformation = () => {
                 <FormLabel>Event link</FormLabel>
                 <FormControl>
                   <Input
+                    defaultValue={eventInformation.link}
                     placeholder="your-link"
                     onChange={(event) => {
-                      field.onChange(event);
-                      changeEventLink(event.target.value);
+                      const transformedValue = event.target.value
+                        .toLowerCase()
+                        .replace(/\s+/g, "-");
+                      field.onChange(transformedValue);
+                      form.setValue("link", transformedValue, {
+                        shouldValidate: true,
+                      });
+                      changeEventLink(transformedValue);
                     }}
                   />
                 </FormControl>
@@ -157,6 +195,42 @@ const EditEventInformation = () => {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="duration"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Duration</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    changeDuration(value);
+                  }}
+                  value={field.value}
+                  defaultValue={eventInformation.duration}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a duration" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="5">5 minutes</SelectItem>
+                    <SelectItem value="10">10 minutes</SelectItem>
+                    <SelectItem value="15">15 minutes</SelectItem>
+                    <SelectItem value="20">20 minutes</SelectItem>
+                    <SelectItem value="25">25 minutes</SelectItem>
+                    <SelectItem value="30">30 minutes</SelectItem>
+                    <SelectItem value="60">1 hour</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="description"
@@ -164,7 +238,8 @@ const EditEventInformation = () => {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input
+                  <Textarea
+                    defaultValue={eventInformation.description}
                     placeholder="Enter a description"
                     onChange={(event) => {
                       field.onChange(event);
