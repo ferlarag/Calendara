@@ -1,11 +1,5 @@
-import {
-  EventColors,
-  EventInformationSchema,
-  EventState,
-  EventVisibility,
-  EventZodSchema,
-} from "@/types/event";
-import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
+import { EventInformationSchema } from "@/types/event";
+import { createTRPCRouter, privateProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
@@ -51,10 +45,36 @@ export const eventRouter = createTRPCRouter({
       });
       return events;
     }),
+  getEventData: privateProcedure
+    .input(z.object({ eventID: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { db, userID } = ctx;
+      const { eventID } = input;
+
+      // check if the user can make the request
+      const requestedEvent = await db.event.findFirst({
+        where: {
+          id: eventID,
+        },
+      });
+
+      if (!requestedEvent) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const dbTeamMember = await db.teamMember.findFirst({
+        where: {
+          userID,
+          workspaceID: requestedEvent.workspaceID,
+        },
+      });
+
+      if (!dbTeamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      return requestedEvent;
+    }),
   createEvent: privateProcedure
     .input(z.object({ data: EventInformationSchema, workspaceID: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { db, userID, user } = ctx;
+      const { db, userID } = ctx;
       const { data, workspaceID } = input;
       const {
         color,
@@ -93,5 +113,44 @@ export const eventRouter = createTRPCRouter({
       });
 
       return { newEventID: newEvent.id };
+    }),
+  updateEvent: privateProcedure
+    .input(z.object({ data: EventInformationSchema, eventID: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const { data, eventID } = input;
+      const { db, userID } = ctx;
+
+      const { workspaceMember } = await db.$transaction(async (prisma) => {
+        const event = await prisma.event.findFirstOrThrow({
+          where: {
+            id: eventID,
+          },
+        });
+
+        // check if the user can make changes to this event
+        const workspaceMember = await prisma.teamMember.findFirstOrThrow({
+          where: {
+            userID,
+            workspaceID: event.workspaceID,
+            OR: [{ role: "ADMIN" }, { role: "OWNER" }],
+          },
+        });
+
+        // update
+        await prisma.event.update({
+          where: {
+            id: eventID,
+          },
+          data: {
+            ...data,
+          },
+        });
+        return { workspaceMember };
+      });
+
+      return {
+        eventID,
+        workspaceID: workspaceMember.workspaceID,
+      };
     }),
 });

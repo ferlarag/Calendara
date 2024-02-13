@@ -1,43 +1,17 @@
 import { useEventData } from "@/hooks/useEventData/useEventData";
 import React from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { EditEventWindow } from "@/hooks/useEventData/event-data-context";
 import { ChevronLeft } from "lucide-react";
-import { Form } from "./ui/form";
+import { Form } from "../ui/form";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const EditEventSchedule = () => {
+const EditEventReminders = () => {
   const { event, changeWindow, currentWindow } = useEventData();
 
-  const formSchema = z.object({
-    pickRange: z.enum([
-      "INDEFINETLY_FUTURE",
-      "WITHING_DATES",
-      "DAYS_IN_FUTURE",
-    ]),
-    availableFrom: z.date(),
-    availableUntil: z.date(),
-    dateRangeAvailabilityInTheFuture: z.enum(["WEEK_DAYS", "CALENDAR_DAYS"]),
-    availableFor: z.number().min(1).optional(),
-    scheduleID: z.string().optional(),
-    minutesBeforeNextEvent: z.number(),
-    minutesAfterPreviousEvent: z.number(),
-    maxNumberOfEventsPerDay: z.number().optional(),
-    minNoticeHours: z.number(),
-    availabilitySlotsSpacingMinutes: z.number(),
-    includeHolidays: z.boolean(),
-    schedule: z.object({
-      mon: z.object({ start: z.number(), end: z.number() }),
-      tue: z.object({ start: z.number(), end: z.number() }),
-      wed: z.object({ start: z.number(), end: z.number() }),
-      thur: z.object({ start: z.number(), end: z.number() }),
-      fri: z.object({ start: z.number(), end: z.number() }),
-      sat: z.object({ start: z.number(), end: z.number() }),
-      sun: z.object({ start: z.number(), end: z.number() }),
-    }),
-  });
+  const formSchema = z.object({});
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,4 +66,4 @@ const EditEventSchedule = () => {
   );
 };
 
-export default EditEventSchedule;
+export default EditEventReminders;

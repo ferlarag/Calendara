@@ -8,7 +8,7 @@ import {
 } from "@prisma/client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Clipboard, Settings } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -64,9 +64,15 @@ const EventCard = ({ card }: CardProps) => {
                 setSelected((value) => (value ? !value : true));
               }}
             />
-            <Button variant={"ghost"} size={"icon"}>
+            <Link
+              href={`/dashboard/e/${card.id}/edit`}
+              className={buttonVariants({
+                size: "icon",
+                variant: "ghost",
+              })}
+            >
               <Settings className="h-4 w-4" />
-            </Button>
+            </Link>
           </div>
 
           <div>

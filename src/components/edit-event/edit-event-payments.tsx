@@ -1,14 +1,14 @@
 import { useEventData } from "@/hooks/useEventData/useEventData";
 import React from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { EditEventWindow } from "@/hooks/useEventData/event-data-context";
 import { ChevronLeft } from "lucide-react";
-import { Form } from "./ui/form";
+import { Form } from "../ui/form";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const EditEventReminders = () => {
+const EditEventPayments = () => {
   const { event, changeWindow, currentWindow } = useEventData();
 
   const formSchema = z.object({});
@@ -66,4 +66,4 @@ const EditEventReminders = () => {
   );
 };
 
-export default EditEventReminders;
+export default EditEventPayments;

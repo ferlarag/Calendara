@@ -6,14 +6,19 @@ import EditEventSchedule from "./edit-event-schedule";
 import EditEventPayments from "./edit-event-payments";
 import EditEventBookingOptions from "./edit-event-booking-options";
 import EditEventReminders from "./edit-event-reminders";
+import { type Event } from "@prisma/client";
 
-const EditEventDetails = () => {
+interface Props {
+  event: Event;
+}
+
+const EditEventDetails = ({ event }: Props) => {
   const { currentWindow } = useEventData();
 
   const returnWindow = () => {
     switch (currentWindow) {
       case EditEventWindow.EDIT_INFORMATION:
-        return <EditEventInformation />;
+        return <EditEventInformation event={event} />;
       case EditEventWindow.SCHEDULE_SETTINGS:
         return <EditEventSchedule />;
       case EditEventWindow.PAYMENT_OPTIONS:

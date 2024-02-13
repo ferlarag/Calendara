@@ -14,32 +14,17 @@ import {
   Settings,
   Subtitles,
 } from "lucide-react";
-import { api } from "@/trpc/react";
-import { redirect, useParams } from "next/navigation";
-import EditEventDetails from "@/components/edit-event/edit-event-details";
-import { Button } from "@/components/ui/button";
+import EditEventDetails from "./edit-event-details";
+import { Button } from "../ui/button";
 
-const Page = () => {
+const EditEventItems = () => {
   const { currentWindow, changeWindow } = useEventData();
-  const { eventID } = useParams<{ eventID: string }>();
-  const { data, error, isLoading } = api.event.getEventData.useQuery({
-    eventID,
-  });
-
-  if (isLoading) {
-    return <div>Loading</div>;
-  }
-
-  if (error) {
-    redirect("/dashboard");
-  }
-
   return (
     <div className="relative flex h-screen">
       <div
         className={`absolute left-0 top-0 flex h-screen w-[440px] flex-col border-r bg-white transition-all ${currentWindow !== EditEventWindow.HOME ? "translate-x-[0px]" : "translate-x-[-440px]"}`}
       >
-        <EditEventDetails event={data} />
+        {/* <EditEventDetails /> */}
       </div>
       <aside className="flex w-[440px] flex-col border-r shadow-lg">
         <div className="space-y-2 border-b px-8 py-4">
@@ -187,4 +172,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default EditEventItems;
