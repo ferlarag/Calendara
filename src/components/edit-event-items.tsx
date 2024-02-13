@@ -1,7 +1,7 @@
 "use client";
 
-import { EditEventWindow } from "@/context/event-data-context";
-import { useEventData } from "@/context/useEventData";
+import { EditEventWindow } from "@/hooks/useEventData/event-data-context";
+import { useEventData } from "@/hooks/useEventData/useEventData";
 import {
   BellRing,
   CalendarDays,

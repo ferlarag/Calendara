@@ -1,6 +1,6 @@
 import React from "react";
-import { useEventData } from "@/context/useEventData";
-import { EditEventWindow } from "@/context/event-data-context";
+import { useEventData } from "@/hooks/useEventData/useEventData";
+import { EditEventWindow } from "@/hooks/useEventData/event-data-context";
 import EditEventInformation from "./edit-event-information";
 import EditEventSchedule from "./edit-event-schedule";
 import EditEventPayments from "./edit-event-payments";

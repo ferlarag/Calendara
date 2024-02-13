@@ -1,7 +1,7 @@
-import { useEventData } from "@/context/useEventData";
+import { useEventData } from "@/hooks/useEventData/useEventData";
 import React from "react";
 import { Button } from "./ui/button";
-import { EditEventWindow } from "@/context/event-data-context";
+import { EditEventWindow } from "@/hooks/useEventData/event-data-context";
 import { ChevronLeft } from "lucide-react";
 import { Form } from "./ui/form";
 import { z } from "zod";

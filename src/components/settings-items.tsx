@@ -10,10 +10,10 @@ import {
   LogIn,
   User2,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 
 interface NavigationItem {
-  link: string;
+  path: string;
   title: string;
   icon: ReactNode;
 }
@@ -21,44 +21,48 @@ interface NavigationItem {
 export const settingsItems: NavigationItem[] = [
   {
     title: "Profile",
-    link: "/settings/profile",
+    path: "profile",
     icon: <User2 className="h-5 w-5" />,
   },
   {
     title: "Business Branding",
-    link: "/settings/business",
+    path: "business",
     icon: <ImageIcon className="h-5 w-5" />,
   },
   {
     title: "My-Link",
-    link: "/settings/my-link",
+    path: "my-link",
     icon: <LinkIcon className="h-5 w-5" />,
   },
   {
     title: "Login Preferences",
-    link: "/settings/login-preferences",
+    path: "login-preferences",
     icon: <LogIn className="h-5 w-5" />,
   },
   {
     title: "Calendar Sync",
-    link: "/settings/calendar-sync",
+    path: "calendar-sync",
     icon: <CalendarFold className="h-5 w-5" />,
   },
 ];
 
 const SettingsNavigationItems = () => {
   const path = usePathname();
+  const { workspaceID } = useParams<{ workspaceID: string }>();
 
   return (
     <>
       {settingsItems.map((item) => (
         <Link
           className={buttonVariants({
-            variant: path === item.link ? "activeMenuLink" : "menuLink",
+            variant:
+              path === `/dashboard/settings/${workspaceID}/${item.path}`
+                ? "activeMenuLink"
+                : "menuLink",
             className: "gap-2",
           })}
-          href={item.link}
-          key={item.link}
+          href={`/dashboard/settings/${workspaceID}/${item.path}`}
+          key={item.path}
         >
           {item.icon}
           {item.title}

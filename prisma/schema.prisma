@@ -36,17 +36,19 @@ model User {
   @@index([id])
 }
 
-model Business {
-  id                  String   @id @unique @default(cuid())
-  ownerID             String
-  name                String
-  link                String
-  businessDescription String?
-  location            String?
-  locationDescription String?
-  businessLogoURL     String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+model Workspace {
+  id                   String   @id @unique @default(cuid())
+  ownerID              String
+  name                 String
+  link                 String
+  scheduleID           String?
+  workspaceDescription String?
+  location             String?
+  locationDescription  String?
+  workspaceLogoURL     String?
+  timeZone             String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   @@index([id])
 }
@@ -59,12 +61,12 @@ enum Role {
 }
 
 model TeamMember {
-  id         String   @id @unique @default(cuid())
-  userID     String
-  businessID String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  role       Role
+  id          String   @id @unique @default(cuid())
+  userID      String
+  workspaceID String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  role        Role
 
   @@index([id])
 }
@@ -82,7 +84,7 @@ enum EventVisibility {
 
 enum DateRangeAvailability {
   INDEFINETLY_FUTURE
-  WITHING_DATES
+  WITHIN_DATES
   DAYS_IN_FUTURE
 }
 
@@ -102,7 +104,7 @@ enum EventColors {
 
 model Event {
   id                               String                           @id @unique @default(cuid())
-  businessID                       String
+  workspaceID                      String
   createdAt                        DateTime                         @default(now())
   updatedAt                        DateTime                         @updatedAt
   // Event information
@@ -110,7 +112,7 @@ model Event {
   color                            EventColors
   link                             String                           @unique
   duration                         Int                              @default(30) //in minutes 
-  description                      String?
+  description                      String
   locations                        Json?
   state                            EventState
   visibility                       EventVisibility                  @default(PUBLIC)
@@ -154,31 +156,21 @@ model Event {
 }
 
 model Schedule {
-  id             String @id @unique @default(cuid())
-  eventId        String
-  timezone       String
-  mondayFrom     Int
-  mondayUntil    Int
-  tuesdayFrom    Int
-  tuesdayUntil   Int
-  wednesdayFrom  Int
-  wednesdayUntil Int
-  thursdayFrom   Int
-  thursdayUntil  Int
-  fridayFrom     Int
-  fridayUntil    Int
-  saturdayFrom   Int
-  saturdayUntil  Int
-  sundayFrom     Int
-  sundayUntil    Int
-  specialDates   Json?
+  id           String   @id @unique @default(cuid())
+  workspaceID  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String
+  days         Json
+  specialDates Json
+  timeZone     String
 
   @@index([id])
 }
 
 model Holidays {
   id           String @id @unique @default(cuid())
-  businessId   String
+  workspaceId  String
   specialDates Json?
 
   @@index([id])
@@ -194,7 +186,7 @@ enum PaymentTypes {
 
 model Client {
   id          String   @id @unique @default(cuid())
-  businessID  String
+  workspaceID String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   email       String?
@@ -229,7 +221,7 @@ enum NotificationStatus {
 
 model BookedEvent {
   id               String             @id @unique @default(cuid())
-  businessID       String
+  workspaceID      String
   eventID          String
   clientID         String
   dueDate          DateTime
