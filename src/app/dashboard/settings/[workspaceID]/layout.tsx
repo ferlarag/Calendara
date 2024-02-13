@@ -1,9 +1,8 @@
 import Logo from "@/components/logo";
 import NavigationHeadline from "@/components/navigation-headline";
-import NavigationsItems from "@/components/dashboard-navigation-items";
 import SettingsNavigationItems from "@/components/settings-items";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { ChevronLeft, LogOut, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode } from "react";
 
