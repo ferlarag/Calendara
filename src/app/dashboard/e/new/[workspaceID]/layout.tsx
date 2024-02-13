@@ -1,7 +1,5 @@
 "use client";
 
-import { useEventData } from "@/hooks/useEventData/useEventData";
-import React, { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -11,8 +9,7 @@ import {
 } from "@/components/ui/select";
 import { EventColors } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { EditEventWindow } from "@/hooks/useEventData/event-data-context";
-import { ChevronDown, ChevronLeft, ZoomIn } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -27,91 +24,43 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { type ReactNode } from "react";
-import { z } from "zod";
+import { type z } from "zod";
+import { EventInformationSchema } from "@/types/event";
+import { api } from "@/trpc/react";
+import { toast } from "sonner";
 
 interface Props {
   children: ReactNode;
 }
 const Layout = ({ children }: Props) => {
   const router = useRouter();
+  const { workspaceID } = useParams<{ workspaceID: string }>();
 
-  const {
-    changeWindow,
-    event,
-    changeEventColor,
-    changeName,
-    changeEventLink,
-    changeDuration,
-    changeDescription,
-  } = useEventData();
-
-  // API Endpoints
-  const {
-    isSuccess,
-    isLoading,
-    mutate: createNewEvent,
-  } = api.event.createEvent.useMutation({
-    onMutate: () => {
-      console.log("Mutating");
+  const { mutate: createEvent, isLoading } = api.event.createEvent.useMutation({
+    onSuccess: ({ newEventID }) => {
+      router.push(`dashboard/e/${newEventID}/edit`);
     },
-    onSuccess: ({ eventID }) => {
-      changeWindow(EditEventWindow.HOME);
-      router.push(`/edit/${eventID}`);
+    onError: () => {
+      toast("Something went wrong. Please try again later.");
     },
   });
 
-  const formSchema = z.object({
-    color: z.string(),
-    name: z.string(),
-    link: z
-      .string()
-      .min(3, { message: "The link must be at least 3 characters long" })
-      .trim()
-      .regex(
-        /^[a-z0-9-]+$/,
-        "The custom URL must only contain lowercase letters, numbers, and hyphens",
-      )
-      .transform((str) => str.toLowerCase().replace(/\s+/g, "-")),
-    duration: z.string().transform((value) => parseInt(value)),
-    description: z.string().optional(),
-    locations: z.array(
-      z.object({
-        id: z.string(),
-        type: z.enum(["zoom", "phone", "googleMeets", "inPerson"]),
-        location: z.string().optional(),
-        phoneCountryCode: z.string().optional(),
-        phoneNumber: z.string().optional(),
-        instructions: z.string().optional(),
-      }),
-    ),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof EventInformationSchema>>({
+    resolver: zodResolver(EventInformationSchema),
     defaultValues: {
-      color: event.color,
-      description: event.description,
-      name: event.name,
-      link: event.link,
-      duration: event.duration,
-      // locations: event.locations,
+      color: "LIGHT_BLUE_SKY",
+      duration: 30,
+      visibility: "PUBLIC",
+      state: "LIVE",
+      locations: [],
+      description: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    createNewEvent({
-      color: event.color,
-      description: event.description,
-      link: event.link,
-      name: event.name,
-      state: event.state,
-      duration: event.duration,
-      locations: event.locations,
-      visibility: event.visibility,
-    });
+  function onSubmit(data: z.infer<typeof EventInformationSchema>) {
+    createEvent({ data, workspaceID });
   }
 
   return (
@@ -152,10 +101,7 @@ const Layout = ({ children }: Props) => {
                         render={({ field: selectField }) => (
                           <FormItem>
                             <Select
-                              onValueChange={(color) => {
-                                selectField.onChange(color);
-                                changeEventColor(color as EventColors);
-                              }}
+                              onValueChange={selectField.onChange}
                               value={selectField.value}
                             >
                               <FormControl>
@@ -189,12 +135,9 @@ const Layout = ({ children }: Props) => {
                       />
                       <FormControl>
                         <Input
-                          defaultValue={event.name}
+                          defaultValue={field.value}
                           placeholder="My awesome event"
-                          onChange={(e) => {
-                            field.onChange(e);
-                            changeName(e.target.value);
-                          }}
+                          onChange={field.onChange}
                         />
                       </FormControl>
                     </div>
@@ -210,55 +153,90 @@ const Layout = ({ children }: Props) => {
                     <FormLabel>Event link</FormLabel>
                     <FormControl>
                       <Input
-                        defaultValue={event.link}
+                        defaultValue={field.value}
                         placeholder="your-link"
-                        onChange={(event) => {
-                          const transformedValue = event.target.value
-                            .toLowerCase()
-                            .replace(/\s+/g, "-");
-                          field.onChange(transformedValue);
-                          form.setValue("link", transformedValue, {
-                            shouldValidate: true,
-                          });
-                          changeEventLink(transformedValue);
-                        }}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormDescription>
-                      https://calendara.app/your_business/{event.link}
+                      https://calendara.app/your_business/{field.value}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Duration</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          className="w-[100px] text-right"
-                          type="number"
-                          defaultValue={event.duration}
-                          placeholder="Enter a duration"
-                          onChange={(event) => {
-                            const value = event.target.valueAsNumber;
-                            field.onChange(event);
-                            changeDuration(value);
-                            console.log(value);
-                          }}
-                        />
-                        <p className="text-brand-500">Minutes</p>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex flex-col gap-2">
+                <FormField
+                  control={form.control}
+                  name="duration"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Duration</FormLabel>
+                      <Select
+                        value={`${field.value}`}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select duration" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="15">15 mins</SelectItem>
+                          <SelectItem value="30">30 mins</SelectItem>
+                          <SelectItem value="45">45 mins</SelectItem>
+                          <SelectItem value="60">1 hour</SelectItem>
+                          <SelectItem value="custom">Custom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex gap-2">
+                  <FormField
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              className="w-[100px] text-right"
+                              type="number"
+                              defaultValue={field.value}
+                              placeholder="Hours"
+                              onChange={field.onChange}
+                            />
+                            <p className="text-sm text-brand-500">/ Hours</p>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              className="w-[100px] text-right"
+                              type="number"
+                              defaultValue={field.value}
+                              placeholder="Minutes"
+                              onChange={field.onChange}
+                            />
+                            <p className="text-sm text-brand-500">/ Minutes</p>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
               <FormField
                 control={form.control}
@@ -268,12 +246,9 @@ const Layout = ({ children }: Props) => {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea
-                        defaultValue={event.description}
+                        defaultValue={field.value}
                         placeholder="Enter a description"
-                        onChange={(event) => {
-                          field.onChange(event);
-                          changeDescription(event.target.value);
-                        }}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormDescription>
@@ -290,8 +265,16 @@ const Layout = ({ children }: Props) => {
                 <Button variant={"secondary"} className="ml-auto">
                   Save as draft
                 </Button>
-                <Button type="submit" className={`w-[75px]`}>
-                  Save
+                <Button
+                  disabled={isLoading}
+                  type="submit"
+                  className={`w-[75px]`}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Save"
+                  )}
                 </Button>
               </div>
             </div>

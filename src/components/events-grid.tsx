@@ -13,11 +13,10 @@ interface Props {
 const EventsGrid = ({ className }: Props) => {
   const { workspaceID } = useParams<{ workspaceID: string }>();
   const { data, isLoading, error } = api.event.getMostRecentEvents.useQuery({
-    skip: 0,
     workspaceID,
   });
   return (
-    <div className={cn(className, "grid w-full grid-cols-3")}>
+    <div className={cn(className, "grid w-full grid-cols-3 gap-3")}>
       {isLoading ? (
         <div className="fle-col col-span-3 flex items-center justify-center">
           <Loader2 className="animate-spin" />

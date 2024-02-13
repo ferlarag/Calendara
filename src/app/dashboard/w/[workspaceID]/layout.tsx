@@ -1,10 +1,8 @@
 import Logo from "@/components/logo";
 import NavigationHeadline from "@/components/navigation-headline";
 import DashboardNavigationItems from "@/components/dashboard-navigation-items";
-import { buttonVariants } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import { type ReactNode } from "react";
+import CreateEventButton from "@/components/create-event-button";
 
 interface Props {
   children: ReactNode;
@@ -18,15 +16,7 @@ export default function Layout({ children }: Props) {
         <nav className="flex h-full flex-col gap-2">
           <DashboardNavigationItems />
         </nav>
-        <Link
-          className={buttonVariants({
-            className: "items-centesr mt-auto flex gap-2",
-          })}
-          href={"/new-event"}
-        >
-          <Plus className="h-5 w-5" />
-          Create
-        </Link>
+        <CreateEventButton />
       </aside>
       <div className="h-screen w-full bg-zinc-100 px-8 pb-6">
         <NavigationHeadline />

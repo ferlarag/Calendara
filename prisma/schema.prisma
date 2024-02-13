@@ -112,7 +112,7 @@ model Event {
   color                            EventColors
   link                             String                           @unique
   duration                         Int                              @default(30) //in minutes 
-  description                      String
+  description                      String?
   locations                        Json?
   state                            EventState
   visibility                       EventVisibility                  @default(PUBLIC)

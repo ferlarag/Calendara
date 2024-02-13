@@ -69,3 +69,33 @@ export const EventZodSchema = z.object({
   remindOneMonthBefore: z.boolean().default(false),
   attachments: z.any().optional(), // Json field, adjust as needed
 });
+
+export const EventInformationSchema = z.object({
+  name: z.string().min(5, { message: "Must be at least 5 characters long" }),
+  color: EventColors.default("LIGHT_BLUE_SKY"),
+  link: z
+    .string()
+    .min(3, { message: "The link must be at least 3 characters long" })
+    .trim()
+    .regex(
+      /^[a-z0-9-]+$/,
+      "The custom URL must only contain lowercase letters, numbers, and hyphens",
+    )
+    .transform((str) => str.toLowerCase().replace(/\s+/g, "-")),
+  duration: z
+    .number()
+    // .transform((value) => parseInt(value))
+    .default(30),
+  description: z.string().optional(),
+  locations: z.array(
+    z.object({
+      type: z.enum(["zoom", "phone", "googleMeets", "inPerson"]),
+      location: z.string().optional(),
+      phoneCountryCode: z.string().optional(),
+      phoneNumber: z.string().optional(),
+      instructions: z.string().optional(),
+    }),
+  ),
+  state: EventState,
+  visibility: EventVisibility.default("PUBLIC"),
+});
