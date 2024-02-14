@@ -7,7 +7,7 @@ import eventReducer from "../useEventData/event-reducer";
 
 export const defaultEventState: Event = {
   id: "default_id",
-  businessID: "default_business_id",
+  workspaceID: "default_business_id",
   createdAt: new Date(),
   updatedAt: new Date(),
   name: "My New Event",
