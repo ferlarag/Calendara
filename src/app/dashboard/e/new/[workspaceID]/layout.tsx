@@ -39,8 +39,10 @@ const Layout = ({ children }: Props) => {
   const { workspaceID } = useParams<{ workspaceID: string }>();
 
   const { mutate: createEvent, isLoading } = api.event.createEvent.useMutation({
-    onSuccess: ({ newEventID }) => {
-      router.push(`/dashboard/e/${newEventID}/edit?origin=${workspaceID}`);
+    onSuccess: (data) => {
+      if (!data) return;
+      const { eventID } = data;
+      router.push(`/dashboard/e/${eventID}/edit?origin=${workspaceID}`);
     },
     onError: () => {
       toast("Something went wrong. Please try again later.");

@@ -1,14 +1,10 @@
 "use client";
 import WorkspaceCard from "@/components/workspace-card";
 import { api } from "@/trpc/react";
-import { redirect } from "next/navigation";
 import React from "react";
 
 const Page = () => {
-  const { data, error, isLoading } =
-    api.workspace.availableBusinesses.useQuery();
-
-  if (error) redirect("/");
+  const { data, isLoading } = api.workspace.availableBusinesses.useQuery();
 
   if (isLoading) {
     return <div>Loading</div>;

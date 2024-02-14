@@ -25,7 +25,9 @@ const Page = () => {
     onError: () => {
       return "Woops";
     },
-    onSuccess: ({ newWorkspaceID }) => {
+    onSuccess: (data) => {
+      if (!data) return;
+      const { newWorkspaceID } = data;
       router.push(`/dashboard/w/${newWorkspaceID}/events`);
     },
   });

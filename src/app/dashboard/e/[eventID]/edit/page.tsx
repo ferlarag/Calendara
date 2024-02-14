@@ -32,7 +32,7 @@ const Page = () => {
     return <div>Loading</div>;
   }
 
-  if (error) {
+  if (!data || error) {
     if (origin) {
       redirect(`/dashboard/w/${origin}/calendar`);
     }
