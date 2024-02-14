@@ -8,7 +8,7 @@ const Page = () => {
   const { data, error, isLoading } =
     api.workspace.availableBusinesses.useQuery();
 
-  if (!data || error) redirect("/dashboard/create-business");
+  if (error) redirect("/");
 
   if (isLoading) {
     return <div>Loading</div>;
@@ -16,9 +16,13 @@ const Page = () => {
 
   return (
     <div className="grid grid-cols-3">
-      {data.map((workspace) => (
-        <WorkspaceCard workspace={workspace} key={workspace.id} />
-      ))}
+      {data ? (
+        data.map((workspace) => (
+          <WorkspaceCard workspace={workspace} key={workspace.id} />
+        ))
+      ) : (
+        <div>Nothing</div>
+      )}
     </div>
   );
 };
