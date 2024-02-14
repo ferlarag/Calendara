@@ -1,4 +1,4 @@
-import { EventColors } from "@prisma/client";
+import { type EventColors } from "@prisma/client";
 
 export enum AvailableLocations {
   zoom = "Zoom Call",
@@ -9,18 +9,18 @@ export enum AvailableLocations {
 
 export interface EventLocation {
   id: string;
-  type: AvailableLocations;
+  type: "zoom" | "phone" | "googleMeets" | "inPerson";
   location?: string;
   phoneCountryCode?: string;
   phoneNumber?: string;
-  instructions?: string | null;
+  instructions?: string;
 }
 
 export interface EventInformation {
   color: EventColors;
   name: string;
   link: string;
-  duration: number;
+  duration: string;
   description: string;
   locations: EventLocation[];
 }

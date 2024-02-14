@@ -1,16 +1,12 @@
 "use client";
 
-import {
-  type EventColors,
-  type EventState,
-  type EventVisibility,
-  type Prisma,
-} from "@prisma/client";
+import { type Event, type EventColors } from "@prisma/client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Clipboard, Settings } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
+import { cn } from "@/lib/utils";
 
 export const getEventColor = (color: EventColors): string => {
   return EventColorValues[color as keyof typeof EventColorValues] || "#FFFFFF";
@@ -26,58 +22,79 @@ export enum EventColorValues {
 }
 
 export interface CardProps {
-  card: {
-    id: string;
-    link: string;
-    name: string;
-    color: EventColors;
-    locations: Prisma.JsonValue;
-    state: EventState;
-    visibility: EventVisibility;
-    isPayedEvent: boolean;
-    requireOnlinePayment: boolean;
-    price: number | null;
-  };
+  card: Pick<
+    Event,
+    | "id"
+    | "link"
+    | "name"
+    | "color"
+    | "locations"
+    | "state"
+    | "visibility"
+    | "isPayedEvent"
+    | "requireOnlinePayment"
+    | "price"
+    | "workspaceID"
+  >;
 }
 
 const EventCard = ({ card }: CardProps) => {
-  const [isSelected, setIsSelected] = useState(false);
+  const [selected, setSelected] = useState(false);
   const color = getEventColor(card.color);
+
   return (
-    <div className="h-[250px] w-full rounded-lg border shadow-md">
+    <div
+      className={cn(
+        "flex h-[250px] w-full flex-col overflow-hidden rounded-lg border bg-white shadow-md",
+        `${selected ? "border-brand-500 ring-2 ring-brand-500" : "ring-0"}`,
+      )}
+    >
       {/* top */}
       <div className={`bg-[${color}] h-2`} />
 
-      {/* middle */}
-      <div className="flex flex-col justify-between px-3 pb-5 pt-0.5">
-        <div className="flex items-center justify-between">
-          <Checkbox />
-          <Button variant={"ghost"} size={"icon"}>
-            <Settings className="h-4 w-4" />
-          </Button>
-        </div>
-        <div>
-          <h3 className="text-2xl font-medium">{card.name}</h3>
-          <div className="flex w-full justify-between">
-            <div className="flex flex-1 flex-col gap-1">
-              <p>{"Locations"}</p>
-              <Link href={"/"}>View Booking Page</Link>
-            </div>
-            <div className="flex flex-col gap-1">
-              <p>{"Paid?"}</p>
-              <p>{"Price"}</p>
+      <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col justify-between px-3 pb-5 pt-0.5">
+          <div className="flex items-center justify-between">
+            <Checkbox
+              checked={selected}
+              onCheckedChange={() => {
+                setSelected((value) => (value ? !value : true));
+              }}
+            />
+            <Link
+              href={`/dashboard/e/${card.id}/edit?origin=${card.workspaceID}`}
+              className={buttonVariants({
+                size: "icon",
+                variant: "ghost",
+              })}
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div>
+            <h3 className="text-2xl font-medium">{card.name}</h3>
+            <div className="flex w-full justify-between">
+              <div className="flex flex-1 flex-col gap-1">
+                <p>{"Locations"}</p>
+                <Link href={"/"}>View Booking Page</Link>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p>{"Paid?"}</p>
+                <p>{"Price"}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* bottom */}
-      <div className="flex justify-between p-3">
-        <Button className="gap-2">
-          <Clipboard className="h-4 w-4" />
-          Copy invitation
-        </Button>
-        <Button variant={"secondaryColor"}>Share</Button>
+        {/* buttons at the bottom */}
+        <div className="flex justify-between border-t p-3">
+          <Button variant={"link"} className="gap-2">
+            <Clipboard className="h-4 w-4" />
+            Copy invitation
+          </Button>
+          <Button variant={"secondaryColor"}>Share</Button>
+        </div>
       </div>
     </div>
   );

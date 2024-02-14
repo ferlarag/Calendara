@@ -4,17 +4,24 @@ import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { Loader2 } from "lucide-react";
 import EventCard from "./event-card";
+import { useParams } from "next/navigation";
 
 interface Props {
   className?: string;
 }
 
 const EventsGrid = ({ className }: Props) => {
+  const { workspaceID } = useParams<{ workspaceID: string }>();
   const { data, isLoading, error } = api.event.getMostRecentEvents.useQuery({
-    skip: 0,
+    workspaceID,
   });
   return (
-    <div className={cn(className, "grid w-full grid-cols-3")}>
+    <div
+      className={cn(
+        className,
+        "grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
+      )}
+    >
       {isLoading ? (
         <div className="fle-col col-span-3 flex items-center justify-center">
           <Loader2 className="animate-spin" />
