@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const EditEventPayments = () => {
-  const { event, changeWindow, currentWindow } = useEventData();
+  const { changeWindow, currentWindow } = useEventData();
 
   const formSchema = z.object({});
 

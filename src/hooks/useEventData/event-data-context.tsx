@@ -1,13 +1,12 @@
 "use client";
-import { type Event, type EventColors } from "@prisma/client";
-import { type ReactNode, createContext, useReducer, useState } from "react";
-import eventReducer from "../useEventData/event-reducer";
+import { type Event } from "@prisma/client";
+import { type ReactNode, createContext, useState } from "react";
 
 // ---- INITIAL STATES -----
 
 export const defaultEventState: Event = {
   id: "default_id",
-  businessID: "default_business_id",
+  workspaceID: "default_business_id",
   createdAt: new Date(),
   updatedAt: new Date(),
   name: "My New Event",
@@ -63,16 +62,8 @@ export enum EditEventWindow {
 }
 
 export interface EventDataContextType {
-  event: Event;
-  hasChanges: boolean;
-  toggleHasChanges: () => void;
   currentWindow: EditEventWindow;
   changeWindow: (newWindow: EditEventWindow) => void;
-  changeEventColor: (newColor: EventColors) => void;
-  changeName: (newName: string) => void;
-  changeEventLink: (newUrl: string) => void;
-  changeDescription: (newDescription: string) => void;
-  changeDuration: (newDuration: number) => void;
 }
 
 export const EventDataContext = createContext<EventDataContextType | undefined>(
@@ -82,8 +73,6 @@ export const EventDataContext = createContext<EventDataContextType | undefined>(
 // ---- PROVIDER -----
 
 export const EventDataProvider = ({ children }: { children: ReactNode }) => {
-  const [hasChanges, setHasChanges] = useState(false);
-
   const [currentWindow, setCurrentWindow] = useState<EditEventWindow>(
     EditEventWindow.HOME,
   );
@@ -92,50 +81,11 @@ export const EventDataProvider = ({ children }: { children: ReactNode }) => {
     setCurrentWindow(newWidow);
   };
 
-  const toggleHasChanges = () => {
-    setHasChanges((prev) => (prev ? !prev : true));
-  };
-
-  // Event Information
-
-  const [event, dispatchEventAction] = useReducer(
-    eventReducer,
-    defaultEventState,
-  );
-
-  const changeEventColor = (newColor: EventColors) => {
-    dispatchEventAction({ type: "CHANGE_COLOR", newColor });
-  };
-
-  const changeName = (newName: string) => {
-    dispatchEventAction({ type: "CHANGE_NAME", newName });
-  };
-
-  const changeEventLink = (newUrl: string) => {
-    dispatchEventAction({ type: "CHANGE_URL", newUrl });
-  };
-
-  const changeDuration = (newDuration: number) => {
-    dispatchEventAction({ type: "CHANGE_DURATION", newDuration });
-  };
-
-  const changeDescription = (newDescription: string) => {
-    dispatchEventAction({ type: "CHANGE_DESCRIPTION", newDescription });
-  };
-
   return (
     <EventDataContext.Provider
       value={{
-        event,
-        hasChanges,
-        toggleHasChanges,
         currentWindow,
         changeWindow,
-        changeEventColor,
-        changeName,
-        changeEventLink,
-        changeDuration,
-        changeDescription,
       }}
     >
       {children}

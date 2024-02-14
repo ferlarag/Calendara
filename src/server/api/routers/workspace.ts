@@ -1,11 +1,10 @@
-import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { type Workspace } from "@prisma/client";
 import { WorkspaceSchema } from "@/types/workspace";
 
 export const workspaceRouter = createTRPCRouter({
-  availableBusinesses: privateProcedure.query(async ({ ctx, input }) => {
-    const { db, userID, user, headers } = ctx;
+  availableBusinesses: privateProcedure.query(async ({ ctx }) => {
+    const { db, userID } = ctx;
 
     const members = await db.teamMember.findMany({
       where: {

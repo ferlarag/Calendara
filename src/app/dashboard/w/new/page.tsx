@@ -21,11 +21,7 @@ import { Button } from "@/components/ui/button";
 const Page = () => {
   const router = useRouter();
 
-  const {
-    mutate: createWorkspace,
-    error,
-    isLoading,
-  } = api.workspace.creteWorkspace.useMutation({
+  const { mutate: createWorkspace } = api.workspace.creteWorkspace.useMutation({
     onError: () => {
       return "Woops";
     },

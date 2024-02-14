@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
@@ -11,7 +12,7 @@ export const userRouter = createTRPCRouter({
     });
 
     if (!dbUser) {
-      await db.user.create({
+      const newUser = await db.user.create({
         data: {
           id: user.id,
           email: user.email!,
@@ -20,10 +21,13 @@ export const userRouter = createTRPCRouter({
         },
       });
 
+      if (!newUser) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
       return {
         success: true,
       };
     }
+
     return {
       success: true,
     };

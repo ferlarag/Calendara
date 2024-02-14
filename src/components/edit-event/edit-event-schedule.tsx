@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const EditEventSchedule = () => {
-  const { event, changeWindow, currentWindow } = useEventData();
+  const { changeWindow, currentWindow } = useEventData();
 
   const formSchema = z.object({
     pickRange: z.enum([
