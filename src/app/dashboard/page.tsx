@@ -2,6 +2,8 @@ import WorkspaceCard from "@/components/workspace-card";
 import { api } from "@/trpc/server";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 const Page = async () => {
   const data = await api.workspace.availableBusinesses.query();
 
