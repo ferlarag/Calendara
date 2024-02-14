@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { type Event, EventColors } from "@prisma/client";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import {
   Form,
@@ -61,6 +61,10 @@ const EditEventInformation = ({ event }: Props) => {
   });
 
   function onSubmit(data: z.infer<typeof EventInformationSchema>) {
+    if (!form.formState.isDirty) {
+      changeWindow(EditEventWindow.HOME);
+      return;
+    }
     updateEvent({ data, eventID: event.id });
   }
 
@@ -73,9 +77,6 @@ const EditEventInformation = ({ event }: Props) => {
         <div className="space-y-2 border-b px-8 py-4">
           <div className="flex">
             <Button
-              onClick={() => {
-                // changeWindow(EditEventWindow.HOME);
-              }}
               variant={"ghost"}
               className="mr-auto gap-2 text-zinc-500 underline"
             >
@@ -261,9 +262,14 @@ const EditEventInformation = ({ event }: Props) => {
 
         <div className="space-y-2 border-t px-8 py-4">
           <div className="flex w-full gap-2">
-            <Button variant={"secondary"} className="ml-auto">
+            <button
+              className={buttonVariants({
+                variant: "secondary",
+                className: "ml-auto",
+              })}
+            >
               Discard changes
-            </Button>
+            </button>
             <Button
               disabled={!form.formState.isDirty || isLoading}
               type="submit"

@@ -16,7 +16,12 @@ const EventsGrid = ({ className }: Props) => {
     workspaceID,
   });
   return (
-    <div className={cn(className, "grid w-full grid-cols-3 gap-3")}>
+    <div
+      className={cn(
+        className,
+        "grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3",
+      )}
+    >
       {isLoading ? (
         <div className="fle-col col-span-3 flex items-center justify-center">
           <Loader2 className="animate-spin" />

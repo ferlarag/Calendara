@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  type EventColors,
-  type EventState,
-  type EventVisibility,
-  type Prisma,
-} from "@prisma/client";
+import { type Event, type EventColors } from "@prisma/client";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Button, buttonVariants } from "./ui/button";
@@ -27,18 +22,20 @@ export enum EventColorValues {
 }
 
 export interface CardProps {
-  card: {
-    id: string;
-    link: string;
-    name: string;
-    color: EventColors;
-    locations: Prisma.JsonValue;
-    state: EventState;
-    visibility: EventVisibility;
-    isPayedEvent: boolean;
-    requireOnlinePayment: boolean;
-    price: number | null;
-  };
+  card: Pick<
+    Event,
+    | "id"
+    | "link"
+    | "name"
+    | "color"
+    | "locations"
+    | "state"
+    | "visibility"
+    | "isPayedEvent"
+    | "requireOnlinePayment"
+    | "price"
+    | "workspaceID"
+  >;
 }
 
 const EventCard = ({ card }: CardProps) => {
@@ -65,7 +62,7 @@ const EventCard = ({ card }: CardProps) => {
               }}
             />
             <Link
-              href={`/dashboard/e/${card.id}/edit`}
+              href={`/dashboard/e/${card.id}/edit?origin=${card.workspaceID}`}
               className={buttonVariants({
                 size: "icon",
                 variant: "ghost",

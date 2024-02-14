@@ -40,7 +40,7 @@ const Layout = ({ children }: Props) => {
 
   const { mutate: createEvent, isLoading } = api.event.createEvent.useMutation({
     onSuccess: ({ newEventID }) => {
-      router.push(`dashboard/e/${newEventID}/edit`);
+      router.push(`/dashboard/e/${newEventID}/edit?origin=${workspaceID}`);
     },
     onError: () => {
       toast("Something went wrong. Please try again later.");
@@ -74,8 +74,9 @@ const Layout = ({ children }: Props) => {
             <div className="space-y-2 border-b px-8 py-4">
               <div className="flex">
                 <Button
-                  onClick={() => {
-                    router.push("/dashboard");
+                  onClick={(event) => {
+                    event.preventDefault();
+                    router.push(`/dashboard/w/${workspaceID}/events`);
                   }}
                   variant={"ghost"}
                   className="mr-auto gap-2 text-zinc-500 underline"

@@ -15,13 +15,15 @@ import {
   Subtitles,
 } from "lucide-react";
 import { api } from "@/trpc/react";
-import { redirect, useParams } from "next/navigation";
+import { redirect, useParams, useSearchParams } from "next/navigation";
 import EditEventDetails from "@/components/edit-event/edit-event-details";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
 const Page = () => {
-  const { currentWindow, changeWindow } = useEventData();
+  const origin = useSearchParams().get("origin");
   const { eventID } = useParams<{ eventID: string }>();
+  const { currentWindow, changeWindow } = useEventData();
   const { data, error, isLoading } = api.event.getEventData.useQuery({
     eventID,
   });
@@ -31,6 +33,9 @@ const Page = () => {
   }
 
   if (error) {
+    if (origin) {
+      redirect(`/dashboard/w/${origin}/calendar`);
+    }
     redirect("/dashboard");
   }
 
@@ -44,12 +49,15 @@ const Page = () => {
       <aside className="flex w-[440px] flex-col border-r shadow-lg">
         <div className="space-y-2 border-b px-8 py-4">
           <div className="flex">
-            <Button
-              variant={"ghost"}
-              className="mr-auto gap-2 text-zinc-500 underline"
+            <Link
+              href={origin ? `/dashboard/w/${origin}/events` : "/dashboard"}
+              className={buttonVariants({
+                variant: "ghost",
+                className: "mr-auto gap-2 text-zinc-500 underline",
+              })}
             >
               <ChevronLeft className="h-4 w-4" /> Go Back
-            </Button>
+            </Link>
             <Button size={"icon"} variant={"ghost"}>
               <Settings className="h-4 w-4" />
             </Button>

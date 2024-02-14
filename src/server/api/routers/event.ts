@@ -39,6 +39,7 @@ export const eventRouter = createTRPCRouter({
           requireOnlinePayment: true,
           state: true,
           visibility: true,
+          workspaceID: true,
         },
         skip: 0,
         take: 9,
