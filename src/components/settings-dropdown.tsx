@@ -12,14 +12,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   CalendarFold,
   ChevronDown,
+  HelpCircle,
   ImageIcon,
   LinkIcon,
   LogIn,
   LogOut,
+  Newspaper,
   User2,
 } from "lucide-react";
 import Link from "next/link";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useParams } from "next/navigation";
 
 interface NavigationItem {
@@ -58,17 +61,19 @@ const settingsItems: NavigationItem[] = [
 
 const SettingsDropdownMenu = () => {
   const { workspaceID } = useParams<{ workspaceID: string }>();
+  const { user } = useKindeBrowserClient();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-1">
         <Avatar>
-          <AvatarFallback>{"FL"}</AvatarFallback>
-          <AvatarImage src={""} />
+          <AvatarFallback>{user?.given_name?.at(0)}</AvatarFallback>
+          <AvatarImage src={user?.picture ? user.picture : ""} />
         </Avatar>
         <ChevronDown className="h-5 w-5 text-zinc-500" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[240px]" align="end">
-        <DropdownMenuLabel className="text-lg font-medium">
+        <DropdownMenuLabel className="text-md font-medium">
           Account Settings
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -86,8 +91,21 @@ const SettingsDropdownMenu = () => {
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem>
+          <Link href="/help" className="flex items-center gap-2 text-brand-500">
+            <HelpCircle className="h-4 w-4" />
+            Help Center
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="/blog" className="flex items-center gap-2 text-brand-500">
+            <Newspaper className="h-4 w-4" />
+            Blog
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
           <LogoutLink
-            className="flex gap-2 text-zinc-600"
+            className="flex items-center gap-2 text-red-600"
             postLogoutRedirectURL="/"
           >
             <LogOut className="h-4 w-4" />

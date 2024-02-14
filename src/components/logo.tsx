@@ -1,16 +1,17 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+"use client";
+
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const Logo = async () => {
-  const { getUser, isAuthenticated } = getKindeServerSession();
-  const user = await getUser();
+const Logo = () => {
+  const { isAuthenticated } = useKindeBrowserClient();
 
   return (
     <Link
       className="flex items-center gap-2"
-      href={user?.id ? "/dashboard" : ""}
+      href={isAuthenticated ? "/dashboard" : ""}
     >
       <Image
         alt="Calendara logo"

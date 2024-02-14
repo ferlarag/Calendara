@@ -1,36 +1,6 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select-workspace";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 import { Button } from "./ui/button";
-import {
-  CalendarFold,
-  ChevronDown,
-  HelpCircle,
-  Image as ImageIcon,
-  Link as LinkIcon,
-  LogIn,
-  LogOut,
-  Mail,
-  User2,
-} from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import Link from "next/link";
+import { UserRoundPlus } from "lucide-react";
 import SelectBusiness from "./select-business";
-import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import SettingsDropdownMenu from "./settings-dropdown";
 
 const NavigationHeadline = () => {
@@ -41,10 +11,8 @@ const NavigationHeadline = () => {
 
       <div className="flex items-center gap-4">
         <Button variant={"secondaryColor"} className="flex items-center gap-2">
-          <Mail /> Team Member
-        </Button>
-        <Button className="text-zinc-600" variant={"ghost"}>
-          <HelpCircle />
+          <UserRoundPlus className="h-5 w-5" />
+          <p className="hidden lg:block">Add team member</p>
         </Button>
 
         <SettingsDropdownMenu />
