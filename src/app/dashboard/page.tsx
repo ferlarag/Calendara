@@ -1,15 +1,22 @@
+"use client";
 import WorkspaceCard from "@/components/workspace-card";
-import { api } from "@/trpc/server";
+import { api } from "@/trpc/react";
+import { redirect } from "next/navigation";
 import React from "react";
 
-export const dynamic = "force-dynamic";
+const Page = () => {
+  const { data, error, isLoading } =
+    api.workspace.availableBusinesses.useQuery();
 
-const Page = async () => {
-  const data = await api.workspace.availableBusinesses.query();
+  if (!data || error) redirect("/dashboard/create-business");
+
+  if (isLoading) {
+    return <div>Loading</div>;
+  }
 
   return (
     <div className="grid grid-cols-3">
-      {data?.map((workspace) => (
+      {data.map((workspace) => (
         <WorkspaceCard workspace={workspace} key={workspace.id} />
       ))}
     </div>

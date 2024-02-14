@@ -1,15 +1,16 @@
-import { api } from "@/trpc/server";
+"use client";
+import { api } from "@/trpc/react";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+const Page = () => {
+  const { data, error, isLoading } = api.user.validateUser.useMutation();
+  if (!data?.success || error) redirect("/");
 
-const Page = async () => {
-  const { success } = await api.user.validateUser.mutate();
-  console.log(success);
+  if (isLoading) {
+    <div>Loading</div>;
+  }
 
-  if (success) {
-    redirect("/dashboard/w/my-calendar/calendar");
-  } else redirect("/");
+  redirect("/dashboard");
 };
 
 export default Page;
