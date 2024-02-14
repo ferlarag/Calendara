@@ -40,13 +40,11 @@ import { toast } from "sonner";
 
 const CreateScheduleModal = () => {
   const [open, setOpen] = useState(false);
-  const [creating, setCreating] = useState(false);
   const { workspaceID } = useParams<{ workspaceID: string }>();
 
   const { mutate, isLoading } = api.schedule.createSchedule.useMutation({
     onSuccess: () => {
       setOpen(false);
-      setCreating(false);
       toast("Schedule Succesfully Created");
     },
     onError: () => {

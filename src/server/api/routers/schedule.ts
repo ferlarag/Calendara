@@ -12,7 +12,7 @@ export const scheduleRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { db, headers, user, userID } = ctx;
+      const { db, userID } = ctx;
       const { schedule, workspaceID } = input;
       const { days, name, specialDates, timeZone } = schedule;
 

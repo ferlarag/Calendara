@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Workspace } from "@prisma/client";
+import { type Workspace } from "@prisma/client";
 import Link from "next/link";
 import React from "react";
 
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const WorkspaceCard = ({ workspace, className }: Props) => {
-  const { id, link, name, workspaceLogoURL } = workspace;
+  const { id, name } = workspace;
   return (
     <Link
       href={`/dashboard/w/${id}/events`}

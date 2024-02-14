@@ -14,7 +14,6 @@ import {
   Settings,
   Subtitles,
 } from "lucide-react";
-import EditEventDetails from "./edit-event-details";
 import { Button } from "../ui/button";
 
 const EditEventItems = () => {
