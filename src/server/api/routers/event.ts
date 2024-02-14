@@ -98,15 +98,13 @@ export const eventRouter = createTRPCRouter({
         } = data;
 
         // check if the the user can make operations in this board
-        const isTeamMember = await db.teamMember.findFirst({
+        const teamMember = await db.teamMember.findFirstOrThrow({
           where: {
             userID,
             workspaceID,
             OR: [{ role: "ADMIN" }, { role: "OWNER" }],
           },
         });
-
-        if (!isTeamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
 
         const newEvent = await db.event.create({
           data: {
@@ -122,8 +120,10 @@ export const eventRouter = createTRPCRouter({
           },
         });
 
-        return { newEventID: newEvent.id };
-      } catch (error) {}
+        return { eventID: newEvent.id, createdBy: teamMember.id };
+      } catch (error) {
+        console.log(error);
+      }
     }),
   updateEvent: privateProcedure
     .input(z.object({ data: EventInformationSchema, eventID: z.string() }))
