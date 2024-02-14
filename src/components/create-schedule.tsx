@@ -41,7 +41,7 @@ import { toast } from "sonner";
 const CreateScheduleModal = () => {
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);
-  const params = useParams<{ workspaceID: string }>();
+  const { workspaceID } = useParams<{ workspaceID: string }>();
 
   const { mutate, isLoading } = api.schedule.createSchedule.useMutation({
     onSuccess: () => {
@@ -62,7 +62,7 @@ const CreateScheduleModal = () => {
   });
 
   function handleFormSubmit(values: z.infer<typeof ScheduleSchema>) {
-    mutate({ workspaceID: params.workspaceID, schedule: values });
+    mutate({ workspaceID, schedule: values });
   }
 
   return (
