@@ -1,10 +1,16 @@
-import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import {
+  LoginLink,
+  RegisterLink,
+} from "@kinde-oss/kinde-auth-nextjs/components";
 
 export default async function Home() {
   return (
     <main className="flex h-screen w-full flex-col items-center justify-center gap-4">
       <nav>
         <LoginLink postLoginRedirectURL="/auth-callback">Log In</LoginLink>
+        <RegisterLink postLoginRedirectURL="/auth-callback">
+          Register
+        </RegisterLink>
       </nav>
       <h1 className="text-3xl font-medium">
         The best way tool for online businesses
