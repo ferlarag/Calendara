@@ -1,29 +1,22 @@
-"use client";
-import { api } from "@/trpc/react";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { Loader2 } from "lucide-react";
+import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-const Page = () => {
-  const { user, isAuthenticated } = useKindeBrowserClient();
-  if (!user || !isAuthenticated)
-    redirect("/api/auth/login?post_login_redirect_url=/dashboard");
+const Page = async () => {
+  noStore();
+  const { isAuthenticated } = getKindeServerSession();
+  const isAuth = await isAuthenticated();
 
-  const { error, isLoading } = api.user.validateUser.useMutation();
+  if (!isAuth)
+    redirect("/api/auth/login?post_login_redirect_url=/auth-callback");
 
-  if (error) {
-    return <div>Something went wrong. Please try again later</div>;
-  }
+  const data = await api.user.validateUser.mutate();
 
-  if (!isLoading && !error) {
+  if (data) {
     redirect("/dashboard");
   } else {
-    return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4">
-        <Loader2 className="h-10 w-10 animate-spin" />
-        <p>You&apos;ll be redirected soon</p>
-      </div>
-    );
+    redirect("/");
   }
 };
 

@@ -23,7 +23,7 @@ enum DateFormat {
 
 model User {
   id            String   @id @unique @default(cuid())
-  email         String   @unique
+  email         String?  @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   name          String?

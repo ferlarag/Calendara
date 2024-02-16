@@ -1,4 +1,3 @@
-import { env } from "@/env";
 import {
   LoginLink,
   RegisterLink,
