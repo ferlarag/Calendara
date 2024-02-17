@@ -3,6 +3,7 @@ import { eventRouter } from "./routers/event";
 import { scheduleRouter } from "./routers/schedule";
 import { workspaceRouter } from "./routers/workspace";
 import { userRouter } from "./routers/user";
+import { onboardRouter } from "./routers/onboard";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   event: eventRouter,
   schedule: scheduleRouter,
   workspace: workspaceRouter,
+  onboard: onboardRouter,
 });
 
 // export type definition of API
