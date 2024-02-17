@@ -31,18 +31,18 @@ enum OnboardingStep {
 }
 
 model User {
-  id               String        @id @unique
-  email            String?       @unique
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  id               String         @id @unique
+  email            String?        @unique
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   name             String?
   lastName         String?
   phoneNumber      String?
   timezone         String?
-  militaryTime     Boolean       @default(true)
+  militaryTime     Boolean        @default(true)
   preferredLang    String?
   onboardingStatus OnboardingStep @default(CREATE_WORKSPACE)
-  workspaces       TeamMember[]
+  teamMembers      TeamMember[]
 
   @@index([id])
 }
@@ -60,7 +60,7 @@ model Workspace {
   timeZone             String
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
-  users                TeamMember[]
+  teamMembers          TeamMember[]
   events               Event[]
   schedules            Schedule[]
   clients              Client[]
@@ -170,8 +170,8 @@ model Event {
   attachments                      Json?
   workspace                        Workspace                        @relation(fields: [workspaceID], references: [id])
   workspaceID                      String
-  schedule                         Schedule                         @relation(fields: [scheduleID], references: [id])
-  scheduleID                       String
+  schedule                         Schedule?                        @relation(fields: [scheduleID], references: [id])
+  scheduleID                       String?
   bookedEvents                     BookedEvent[]
 
   @@index([id])
