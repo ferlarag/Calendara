@@ -4,7 +4,10 @@ import Link from "next/link";
 import React from "react";
 
 interface Props {
-  workspace: Pick<Workspace, "id" | "name" | "link" | "workspaceLogoURL">;
+  workspace: Pick<
+    Workspace,
+    "id" | "name" | "link" | "workspaceLogoURL" | "createdAt"
+  >;
   className?: string;
 }
 

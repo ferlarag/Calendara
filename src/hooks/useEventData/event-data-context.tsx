@@ -29,7 +29,6 @@ export const defaultEventState: Event = {
   minNoticeHours: 24,
   availabilitySlotsSpacingMinutes: 10,
   includeHolidays: false,
-  schedule: {},
   isPayedEvent: false,
   requireOnlinePayment: true,
   showPricing: true,
