@@ -10,7 +10,7 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 
-  // Do not use foreign keys (PlanetScale does not support them)
+  // Do not use foreign keys (PlanetScale does not support them) --- Now they do lol
   relationMode = "prisma"
 }
 
@@ -21,23 +21,34 @@ enum DateFormat {
   DDMMYYYY
 }
 
+enum OnboardingStep {
+  CREATE_WORKSPACE
+  CONNECT_CALENDAR
+  EDIT_CALENDAR
+  CREATE_SCHEDULE
+  FEEDBACK
+  DONE
+}
+
 model User {
-  id            String   @id @unique @default(cuid())
-  email         String?  @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  name          String?
-  lastName      String?
-  phoneNumber   String?
-  timezone      String?
-  militaryTime  Boolean  @default(true)
-  preferredLang String?
+  id               String        @id @unique
+  email            String?       @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  name             String?
+  lastName         String?
+  phoneNumber      String?
+  timezone         String?
+  militaryTime     Boolean       @default(true)
+  preferredLang    String?
+  onboardingStatus OnboardingStep @default(CREATE_WORKSPACE)
+  workspaces       TeamMember[]
 
   @@index([id])
 }
 
 model Workspace {
-  id                   String   @id @unique @default(cuid())
+  id                   String        @id @unique @default(cuid())
   ownerID              String
   name                 String
   link                 String
@@ -47,8 +58,13 @@ model Workspace {
   locationDescription  String?
   workspaceLogoURL     String?
   timeZone             String
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  users                TeamMember[]
+  events               Event[]
+  schedules            Schedule[]
+  clients              Client[]
+  bookedEvents         BookedEvent[]
 
   @@index([id])
 }
@@ -61,14 +77,18 @@ enum Role {
 }
 
 model TeamMember {
-  id          String   @id @unique @default(cuid())
+  id          String    @id @unique @default(cuid())
+  user        User      @relation(fields: [userID], references: [id])
   userID      String
+  workspace   Workspace @relation(fields: [workspaceID], references: [id])
   workspaceID String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   role        Role
 
   @@index([id])
+  @@index([workspaceID])
+  @@index([userID])
 }
 
 enum EventState {
@@ -104,7 +124,6 @@ enum EventColors {
 
 model Event {
   id                               String                           @id @unique @default(cuid())
-  workspaceID                      String
   createdAt                        DateTime                         @default(now())
   updatedAt                        DateTime                         @updatedAt
   // Event information
@@ -122,14 +141,12 @@ model Event {
   avialableUntil                   DateTime?
   dateRangeAvailabilityInTheFuture DateRangeAvailabilityInTheFuture @default(CALENDAR_DAYS)
   availableFor                     Int?
-  scheduleID                       String?
   minutesBeforeNextEvent           Int                              @default(10)
   minutesAfterPreviousEvent        Int                              @default(10)
   maxNumberOfEventsPerDay          Int?                             @default(12)
   minNoticeHours                   Int                              @default(24)
   availabilitySlotsSpacingMinutes  Int                              @default(20)
   includeHolidays                  Boolean                          @default(true)
-  schedule                         Json?
   // Payment Options
   isPayedEvent                     Boolean                          @default(false)
   requireOnlinePayment             Boolean                          @default(true)
@@ -151,21 +168,30 @@ model Event {
   remindTwoWeekBefore              Boolean                          @default(false)
   remindOneMonthBefore             Boolean                          @default(false)
   attachments                      Json?
+  workspace                        Workspace                        @relation(fields: [workspaceID], references: [id])
+  workspaceID                      String
+  schedule                         Schedule                         @relation(fields: [scheduleID], references: [id])
+  scheduleID                       String
+  bookedEvents                     BookedEvent[]
 
   @@index([id])
+  @@index([scheduleID])
+  @@index([workspaceID])
 }
 
 model Schedule {
-  id           String   @id @unique @default(cuid())
-  workspaceID  String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id           String    @id @unique @default(cuid())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   name         String
   days         Json
   specialDates Json
   timeZone     String
+  workspace    Workspace @relation(fields: [workspaceID], references: [id])
+  workspaceID  String
+  events       Event[]
 
-  @@index([id])
+  @@index([workspaceID])
 }
 
 model Holidays {
@@ -185,16 +211,19 @@ enum PaymentTypes {
 }
 
 model Client {
-  id          String   @id @unique @default(cuid())
-  workspaceID String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  email       String?
-  phoneNumber String?
-  name        String?
-  lastName    String?
+  id           String        @id @unique @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  email        String?
+  phoneNumber  String?
+  name         String?
+  lastName     String?
+  workspace    Workspace     @relation(fields: [workspaceID], references: [id])
+  workspaceID  String
+  bookedEvents BookedEvent[]
 
   @@index([id])
+  @@index([workspaceID])
 }
 
 enum BookedEventState {
@@ -221,15 +250,21 @@ enum NotificationStatus {
 
 model BookedEvent {
   id               String             @id @unique @default(cuid())
-  workspaceID      String
-  eventID          String
-  clientID         String
   dueDate          DateTime
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   state            BookedEventState   @default(PENDING)
   lastNotification NotificationStatus @default(NONE)
   nextNotification NotificationStatus @default(NONE)
+  client           Client             @relation(fields: [clientID], references: [id])
+  clientID         String
+  workspace        Workspace          @relation(fields: [workspaceID], references: [id])
+  workspaceID      String
+  event            Event              @relation(fields: [eventID], references: [id])
+  eventID          String
 
   @@index([id])
+  @@index([clientID])
+  @@index([workspaceID])
+  @@index([eventID])
 }
