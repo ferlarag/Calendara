@@ -63,6 +63,20 @@ export const onboardRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { db, userID } = ctx;
       const { workspaceData } = input;
+
+      // check if the url is available
+      const exisitingURL = await db.workspace.findUnique({
+        where: {
+          link: workspaceData.link.toLowerCase(),
+        },
+      });
+
+      if (exisitingURL)
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Link already in use.",
+        });
+
       const dbUser = await db.user.findFirst({
         where: {
           id: userID,

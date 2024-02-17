@@ -51,7 +51,7 @@ model Workspace {
   id                   String        @id @unique @default(cuid())
   ownerID              String
   name                 String
-  link                 String
+  link                 String       @unique
   scheduleID           String?
   workspaceDescription String?
   location             String?

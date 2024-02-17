@@ -1,5 +1,5 @@
 import { createTRPCRouter, privateProcedure } from "../trpc";
-import { WorkspaceSchema } from "@/types/workspace";
+import { WorkspaceSchema, WorkspaceURLSchema } from "@/types/workspace";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -40,18 +40,49 @@ export const workspaceRouter = createTRPCRouter({
 
     return workspaces;
   }),
+  checkUrlAvailability: privateProcedure
+    .input(z.object({ link: WorkspaceURLSchema }))
+    .mutation(async ({ ctx, input }) => {
+      const { db } = ctx;
+      const { link } = input;
+
+      const dbUrl = await db.workspace.findFirst({
+        where: {
+          link,
+        },
+      });
+
+      if (!dbUrl) {
+        return { isAvailable: true };
+      } else {
+        return { isAvailable: false };
+      }
+    }),
   createWorkspace: privateProcedure
     .input(WorkspaceSchema)
     .mutation(async ({ ctx, input }) => {
       const { db, userID } = ctx;
       const { name, link, timeZone } = input;
 
+      // check if the url is available
+      const exisitingURL = await db.workspace.findUnique({
+        where: {
+          link: link.toLowerCase(),
+        },
+      });
+
+      if (exisitingURL)
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Link already in use.",
+        });
+
       const { newTeamMember, newWorkspace } = await db.$transaction(
         async (prisma) => {
           const newWorkspace = await prisma.workspace.create({
             data: {
               name,
-              link,
+              link: link.toLowerCase(),
               timeZone,
               ownerID: userID,
             },
