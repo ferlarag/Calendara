@@ -95,7 +95,7 @@ const DashboardNavigationItems = ({ className }: Props) => {
       </div>
 
       <div
-        className={`fixed z-30 flex h-screen md:static ${!open ? "left-[-300px]" : "left-0"} w-[300px] flex-col gap-8 border-r bg-white px-3 pb-4 pt-2 transition-all md:py-6`}
+        className={`fixed z-30 flex h-svh md:static ${!open ? "left-[-300px]" : "left-0"} w-[300px] flex-col gap-8 border-r bg-white px-3 pb-4 pt-2 transition-all md:py-6`}
       >
         <div className="flex flex-col">
           <Button
@@ -111,6 +111,7 @@ const DashboardNavigationItems = ({ className }: Props) => {
         <nav className="flex h-full flex-col gap-2">
           {items.map((item) => (
             <Link
+              onClick={toggleOpen}
               className={buttonVariants({
                 variant:
                   path === `/dashboard/w/${workspaceID}/${item.path}`

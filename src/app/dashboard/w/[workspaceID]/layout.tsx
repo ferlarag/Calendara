@@ -13,7 +13,7 @@ interface Props {
 
 export default function Layout({ children }: Props) {
   const { workspaceID } = useParams<{ workspaceID: string }>();
-  const { data, isLoading, error } = api.workspace.getWorkspace.useQuery(
+  const { data, isLoading } = api.workspace.getWorkspace.useQuery(
     {
       workspaceID,
     },
@@ -29,15 +29,15 @@ export default function Layout({ children }: Props) {
   return (
     <div className="flex flex-col md:flex-row">
       <DashboardNavigationItems className="shrink-0" />
-      <div className="min-h-screen w-full bg-zinc-100 px-8 pb-6 pt-14 md:overflow-y-scroll md:pt-0">
+      <div className="w-full bg-zinc-100 px-4 pt-14 md:overflow-y-scroll md:px-8 md:pt-0">
         {isLoading ? (
-          <div className="flex items-center gap-2">
+          <div className="flex h-svh items-center justify-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading
           </div>
         ) : (
           <>
             <NavigationHeadline workspace={data} />
-            {children}
+            <div className="h-[calc(100svh-76px)] w-full pb-6">{children}</div>
           </>
         )}
       </div>
