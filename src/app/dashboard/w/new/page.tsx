@@ -21,16 +21,18 @@ import { Button } from "@/components/ui/button";
 const Page = () => {
   const router = useRouter();
 
-  const { mutate: createWorkspace } = api.workspace.creteWorkspace.useMutation({
-    onError: () => {
-      return "Woops";
+  const { mutate: createWorkspace } = api.workspace.createWorkspace.useMutation(
+    {
+      onError: () => {
+        return "Woops";
+      },
+      onSuccess: (data) => {
+        if (!data) return;
+        const { newWorkspaceID } = data;
+        router.push(`/dashboard/w/${newWorkspaceID}/events`);
+      },
     },
-    onSuccess: (data) => {
-      if (!data) return;
-      const { newWorkspaceID } = data;
-      router.push(`/dashboard/w/${newWorkspaceID}/events`);
-    },
-  });
+  );
 
   const form = useForm<z.infer<typeof WorkspaceSchema>>({
     resolver: zodResolver(WorkspaceSchema),
