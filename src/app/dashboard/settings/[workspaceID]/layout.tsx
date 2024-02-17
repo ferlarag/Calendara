@@ -1,9 +1,12 @@
+"use client";
 import Logo from "@/components/logo";
 import NavigationHeadline from "@/components/navigation-headline";
 import SettingsNavigationItems from "@/components/settings-items";
 import { Button } from "@/components/ui/button";
+import { api } from "@/trpc/react";
 import { ChevronLeft, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { type ReactNode } from "react";
 
 interface Props {
@@ -11,6 +14,11 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
+  const { workspaceID } = useParams<{ workspaceID: string }>();
+  const { data: workspace } = api.workspace.getWorkspace.useQuery({
+    workspaceID,
+  });
+
   return (
     <div className="flex">
       <aside className="flex h-screen w-full max-w-[260px] flex-col gap-8 border-r px-3 py-6">
@@ -34,7 +42,7 @@ export default function Layout({ children }: Props) {
         </Button>
       </aside>
       <div className="h-screen w-full bg-zinc-100 px-8 pb-6">
-        <NavigationHeadline />
+        <NavigationHeadline workspace={workspace} />
         {children}
       </div>
     </div>

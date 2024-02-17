@@ -1,18 +1,18 @@
 "use client";
 import WorkspaceCard from "@/components/workspace-card";
 import { api } from "@/trpc/react";
-import React from "react";
 
 const Page = () => {
-  const { data, isLoading } = api.workspace.availableBusinesses.useQuery();
+  const { data, isLoading, error } =
+    api.workspace.availableWorkspaces.useQuery();
 
-  if (isLoading) {
-    return <div>Loading</div>;
-  }
+  if (error) return <div>An error ocurred</div>;
+
+  if (isLoading) return <div>Loading</div>;
 
   return (
     <div className="grid grid-cols-3">
-      {data ? (
+      {data.length !== 0 ? (
         data.map((workspace) => (
           <WorkspaceCard workspace={workspace} key={workspace.id} />
         ))

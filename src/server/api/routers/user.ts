@@ -1,30 +1,25 @@
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
   validateUser: privateProcedure.mutation(async ({ ctx }) => {
-    try {
-      const { db, userID, user } = ctx;
+    const { db, userID, user } = ctx;
 
-      const dbUser = await db.user.findFirst({
-        where: {
-          id: userID,
-        },
-      });
+    const newUser = await db.user.upsert({
+      where: {
+        id: userID,
+      },
+      update: {},
+      create: {
+        id: userID,
+        name: user.given_name,
+        lastName: user.family_name,
+        email: user.email,
+      },
+    });
 
-      if (!dbUser) {
-        await db.user.create({
-          data: {
-            id: user.id,
-            email: user.email!,
-            name: user.given_name,
-            lastName: user.family_name,
-          },
-        });
-      }
+    if (!newUser) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-      return true;
-    } catch (error) {
-      console.log(error);
-    }
+    return { newUserID: newUser.id };
   }),
 });
