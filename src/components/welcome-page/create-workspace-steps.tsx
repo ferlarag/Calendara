@@ -25,7 +25,6 @@ const CreateWorspaceCarousel = () => {
     toast("Something went wrong");
     return (
       <>
-        <p className="fixed left-0 top-0">{step}</p>
         <div>An error ocurred</div>;
       </>
     );
@@ -47,12 +46,7 @@ const CreateWorspaceCarousel = () => {
         return redirect("/dashboard");
     }
   };
-  return (
-    <>
-      <p className="fixed left-0 top-0">{step}</p>
-      {isLoading ? <div>Loading</div> : markup()}
-    </>
-  );
+  return <>{isLoading ? <div>Loading</div> : markup()}</>;
 };
 
 export default CreateWorspaceCarousel;
