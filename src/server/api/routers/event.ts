@@ -11,119 +11,112 @@ export const eventRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      try {
-        const { db, userID } = ctx;
-        const { workspaceID } = input;
+      const { db, userID } = ctx;
+      const { workspaceID } = input;
 
-        // check if the user is part of the workspace
-        const teamMember = await db.teamMember.findFirst({
-          where: {
-            userID,
-            workspaceID,
-          },
-        });
+      // check if the user is part of the workspace
 
-        if (!teamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
+      const teamMember = await db.teamMember.findFirst({
+        where: {
+          userID,
+          workspaceID,
+        },
+      });
 
-        const events = await db.event.findMany({
-          where: {
-            workspaceID,
-          },
-          select: {
-            id: true,
-            name: true,
-            color: true,
-            locations: true,
-            link: true,
-            price: true,
-            isPayedEvent: true,
-            requireOnlinePayment: true,
-            state: true,
-            visibility: true,
-            workspaceID: true,
-          },
-          skip: 0,
-          take: 9,
-        });
-        return events;
-      } catch (error) {
-        console.log(error);
-      }
+      if (!teamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      const events = await db.event.findMany({
+        where: {
+          workspaceID,
+        },
+        select: {
+          id: true,
+          name: true,
+          color: true,
+          locations: true,
+          link: true,
+          price: true,
+          isPayedEvent: true,
+          requireOnlinePayment: true,
+          state: true,
+          visibility: true,
+          workspaceID: true,
+        },
+        skip: 0,
+        take: 9,
+      });
+      return events;
     }),
   getEventData: privateProcedure
     .input(z.object({ eventID: z.string() }))
     .query(async ({ ctx, input }) => {
-      try {
-        const { db, userID } = ctx;
-        const { eventID } = input;
+      const { db, userID } = ctx;
+      const { eventID } = input;
 
-        // check if the user can make the request
-        const requestedEvent = await db.event.findFirst({
-          where: {
-            id: eventID,
-          },
-        });
+      // check if the user can make the request
+      const requestedEvent = await db.event.findFirst({
+        where: {
+          id: eventID,
+        },
+      });
 
-        if (!requestedEvent) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!requestedEvent) throw new TRPCError({ code: "NOT_FOUND" });
 
-        const dbTeamMember = await db.teamMember.findFirst({
-          where: {
-            userID,
-            workspaceID: requestedEvent.workspaceID,
-          },
-        });
+      const dbTeamMember = await db.teamMember.findFirst({
+        where: {
+          userID,
+          workspaceID: requestedEvent.workspaceID,
+        },
+      });
 
-        if (!dbTeamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
+      if (!dbTeamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-        return requestedEvent;
-      } catch (error) {
-        console.log(error);
-      }
+      return requestedEvent;
     }),
   createEvent: privateProcedure
     .input(z.object({ data: EventInformationSchema, workspaceID: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      try {
-        const { db, userID } = ctx;
-        const { data, workspaceID } = input;
-        const {
+      const { db, userID } = ctx;
+      const { data, workspaceID } = input;
+      const {
+        color,
+        duration,
+        link,
+        locations,
+        name,
+        state,
+        visibility,
+        description,
+      } = data;
+
+      // check if the the user can make operations in this board
+      const teamMember = await db.teamMember.findFirstOrThrow({
+        where: {
+          userID,
+          workspaceID,
+          OR: [{ role: "ADMIN" }, { role: "OWNER" }],
+        },
+      });
+
+      if (!teamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      const newEvent = await db.event.create({
+        data: {
+          name,
           color,
           duration,
           link,
           locations,
-          name,
           state,
           visibility,
           description,
-        } = data;
+          workspaceID,
+        },
+      });
 
-        // check if the the user can make operations in this board
-        const teamMember = await db.teamMember.findFirstOrThrow({
-          where: {
-            userID,
-            workspaceID,
-            OR: [{ role: "ADMIN" }, { role: "OWNER" }],
-          },
-        });
+      if (!newEvent) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-        const newEvent = await db.event.create({
-          data: {
-            name,
-            color,
-            duration,
-            link,
-            locations,
-            state,
-            visibility,
-            description,
-            workspaceID,
-          },
-        });
-
-        return { eventID: newEvent.id, createdBy: teamMember.id };
-      } catch (error) {
-        console.log(error);
-      }
+      return { eventID: newEvent.id, createdBy: teamMember.id };
     }),
   updateEvent: privateProcedure
     .input(z.object({ data: EventInformationSchema, eventID: z.string() }))

@@ -12,41 +12,37 @@ export const scheduleRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const { db, userID } = ctx;
-        const { schedule, workspaceID } = input;
-        const { days, name, specialDates, timeZone } = schedule;
+      const { db, userID } = ctx;
+      const { schedule, workspaceID } = input;
+      const { days, name, specialDates, timeZone } = schedule;
 
-        if (!workspaceID)
-          throw new TRPCError({
-            message: "Can't find a Business ID in the request",
-            code: "BAD_REQUEST",
-          });
-
-        // check if the user is part of the requested workspace
-        const teamMember = await db.teamMember.findFirst({
-          where: {
-            workspaceID,
-            userID,
-          },
+      if (!workspaceID)
+        throw new TRPCError({
+          message: "Can't find a Business ID in the request",
+          code: "BAD_REQUEST",
         });
 
-        if (!teamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
+      // check if the user is part of the requested workspace
+      const teamMember = await db.teamMember.findFirst({
+        where: {
+          workspaceID,
+          userID,
+        },
+      });
 
-        // create the schedule
-        const createdSchedule = await db.schedule.create({
-          data: {
-            workspaceID,
-            days,
-            name,
-            specialDates,
-            timeZone,
-          },
-        });
+      if (!teamMember) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-        return { newScheduleID: createdSchedule.id };
-      } catch (error) {
-        console.log(error);
-      }
+      // create the schedule
+      const createdSchedule = await db.schedule.create({
+        data: {
+          workspaceID,
+          days,
+          name,
+          specialDates,
+          timeZone,
+        },
+      });
+
+      return { newScheduleID: createdSchedule.id };
     }),
 });

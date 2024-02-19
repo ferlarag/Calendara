@@ -3,6 +3,7 @@ import { createTRPCRouter, privateProcedure } from "../trpc";
 import { WorkspaceSchema } from "@/types/workspace";
 import { TRPCError } from "@trpc/server";
 import { OnboardingStep } from "@prisma/client";
+import { ScheduleSchema } from "@/types/schedule";
 
 export const onboardRouter = createTRPCRouter({
   getCurrentOnboardingStatus: privateProcedure.query(async ({ ctx }) => {
@@ -91,6 +92,7 @@ export const onboardRouter = createTRPCRouter({
             data: {
               ...workspaceData,
               ownerID: userID,
+              onboardedUserID: userID,
             },
           });
 
@@ -122,6 +124,50 @@ export const onboardRouter = createTRPCRouter({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
       return { newTeamMember, newWorkspace, updatedUser };
+    }),
+  createFirstSchedule: privateProcedure
+    .input(ScheduleSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { days, name, specialDates, timeZone } = input;
+      const { db, userID } = ctx;
+
+      const createdWorkspace = await db.workspace.findFirst({
+        where: {
+          onboardedUserID: userID,
+        },
+      });
+
+      if (!createdWorkspace) throw new TRPCError({ code: "NOT_FOUND" });
+
+      // create the schedule and udpate the user onboarding status
+      const { newScheduleID, updatedUser } = await db.$transaction(
+        async (prisma) => {
+          const newSchedule = await prisma.schedule.create({
+            data: {
+              name,
+              workspaceID: createdWorkspace.id,
+              days,
+              specialDates,
+              timeZone,
+            },
+          });
+
+          const udpatedUSer = await prisma.user.update({
+            where: {
+              id: userID,
+            },
+            data: {
+              onboardingStatus: "FEEDBACK",
+            },
+          });
+          return { newScheduleID: newSchedule.id, updatedUser: udpatedUSer.id };
+        },
+      );
+
+      if (!newScheduleID || !updatedUser)
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      return { newScheduleID, updatedUser };
     }),
   getFeedback: privateProcedure.mutation(async ({ ctx }) => {
     const { db, userID } = ctx;
