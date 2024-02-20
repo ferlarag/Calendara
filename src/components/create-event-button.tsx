@@ -12,7 +12,7 @@ const CreateEventButton = () => {
   return (
     <Link
       className={buttonVariants({
-        className: "items-centesr mt-auto flex gap-2",
+        className: "mt-auto flex items-center gap-2",
       })}
       href={`/dashboard/e/new/${workspaceID}`}
     >

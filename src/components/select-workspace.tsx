@@ -8,21 +8,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { api } from "@/trpc/react";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { ChevronDown, Loader2, Plus } from "lucide-react";
-import { useParams } from "next/navigation";
-import { Workspace } from "@prisma/client";
+import { type Workspace } from "@prisma/client";
 
 interface Props {
   currentWorkspace: Workspace | undefined;
 }
 
 const SelectWorkspace = ({ currentWorkspace }: Props) => {
-  const { data, isLoading, error } =
-    api.workspace.availableWorkspaces.useQuery();
+  const { data, isLoading } = api.workspace.availableWorkspaces.useQuery();
 
   return (
     <>

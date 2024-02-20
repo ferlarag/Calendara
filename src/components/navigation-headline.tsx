@@ -2,7 +2,7 @@ import { Button } from "./ui/button";
 import { UserRoundPlus } from "lucide-react";
 import SelectBusiness from "./select-workspace";
 import SettingsDropdownMenu from "./settings-dropdown";
-import { Workspace } from "@prisma/client";
+import { type Workspace } from "@prisma/client";
 
 interface Props {
   workspace: Workspace | undefined;

@@ -8,15 +8,14 @@ import { OnboardingStep } from "@prisma/client";
 
 const ConnectCalendar = () => {
   const { changeStep } = useOnboarding();
-  const { mutate: skipStep, isLoading } =
-    api.onboard.skipOnboardingStep.useMutation({
-      onError: () => {
-        toast("An error ocurred. Please try again later");
-      },
-      onSuccess: () => {
-        changeStep(OnboardingStep.CREATE_SCHEDULE);
-      },
-    });
+  const { mutate: skipStep } = api.onboard.skipOnboardingStep.useMutation({
+    onError: () => {
+      toast("An error ocurred. Please try again later");
+    },
+    onSuccess: () => {
+      changeStep(OnboardingStep.CREATE_SCHEDULE);
+    },
+  });
 
   return (
     <div className="flex w-full max-w-[500px] flex-col items-center gap-2">

@@ -36,6 +36,20 @@ export const workspaceRouter = createTRPCRouter({
           },
         },
       },
+      include: {
+        teamMembers: {
+          select: {
+            user: {
+              select: {
+                name: true,
+                id: true,
+                pictureUrl: true,
+              },
+            },
+            role: true,
+          },
+        },
+      },
     });
 
     return workspaces;

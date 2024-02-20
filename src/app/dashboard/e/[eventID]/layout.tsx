@@ -1,39 +1,35 @@
-"use client";
-
-import { EditEventWindow } from "@/hooks/useEventData/event-data-context";
-import { useEventData } from "@/hooks/useEventData/useEventData";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   BellRing,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   CreditCard,
-  LinkIcon,
+  Link as LinkIcon,
   Pen,
   Send,
   Settings,
   Subtitles,
 } from "lucide-react";
-import { Button } from "../ui/button";
+import Link from "next/link";
+import { type PropsWithChildren } from "react";
 
-const EditEventItems = () => {
-  const { currentWindow, changeWindow } = useEventData();
+const Layout = ({ children }: PropsWithChildren) => {
   return (
-    <div className="relative flex h-screen">
-      <div
-        className={`absolute left-0 top-0 flex h-screen w-[440px] flex-col border-r bg-white transition-all ${currentWindow !== EditEventWindow.HOME ? "translate-x-[0px]" : "translate-x-[-440px]"}`}
-      >
-        {/* <EditEventDetails /> */}
-      </div>
-      <aside className="flex w-[440px] flex-col border-r shadow-lg">
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <aside className="flex w-[440px] flex-col border-r">
         <div className="space-y-2 border-b px-8 py-4">
           <div className="flex">
-            <Button
-              variant={"ghost"}
-              className="mr-auto gap-2 text-zinc-500 underline"
+            <Link
+              href={"/dashboard"}
+              className={buttonVariants({
+                variant: "ghost",
+                className: "mr-auto gap-2 text-zinc-500 underline",
+              })}
             >
               <ChevronLeft className="h-4 w-4" /> Go Back
-            </Button>
+            </Link>
             <Button size={"icon"} variant={"ghost"}>
               <Settings className="h-4 w-4" />
             </Button>
@@ -47,17 +43,15 @@ const EditEventItems = () => {
           <h1 className="text-3xl font-medium">Edit Event</h1>
         </div>
 
-        <div className="flex-1 overflow-scroll px-4 py-0">
+        <div className="flex-1 overflow-y-scroll px-4 py-0">
           <div className="flex flex-col">
-            <button
-              onClick={() => {
-                changeWindow(EditEventWindow.EDIT_INFORMATION);
-              }}
+            <Link
+              href={"info"}
               className="flex items-center gap-2 border-b py-6 hover:bg-brand-25"
             >
               <div className="flex gap-2">
                 <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
-                  <Pen className="h-5 w-5" />
+                  <Pen className="h-5 w-5 text-brand-500" />
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <h3 className="text-2xl font-medium">Event Information</h3>
@@ -68,17 +62,15 @@ const EditEventItems = () => {
               <div className="ml-auto flex h-9 w-9 items-center justify-center text-zinc-500">
                 <ChevronRight className="h-5 w-5 " />
               </div>
-            </button>
+            </Link>
 
-            <button
-              onClick={() => {
-                changeWindow(EditEventWindow.SCHEDULE_SETTINGS);
-              }}
+            <Link
+              href="schedule"
               className="flex items-center gap-2 border-b py-6 hover:bg-brand-25"
             >
               <div className="flex gap-2">
                 <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
-                  <CalendarDays className="h-5 w-5" />
+                  <CalendarDays className="h-5 w-5 text-brand-500" />
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <h3 className="text-2xl font-medium">Schedule Settings</h3>
@@ -89,17 +81,15 @@ const EditEventItems = () => {
               <div className="ml-auto flex h-9 w-9 items-center justify-center text-zinc-500">
                 <ChevronRight className="h-5 w-5" />
               </div>
-            </button>
+            </Link>
 
-            <button
-              onClick={() => {
-                changeWindow(EditEventWindow.PAYMENT_OPTIONS);
-              }}
+            <Link
+              href="payment"
               className="flex items-center gap-2 border-b py-6 hover:bg-brand-25"
             >
               <div className="flex gap-2">
                 <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
-                  <CreditCard className="h-5 w-5" />
+                  <CreditCard className="h-5 w-5 text-brand-500" />
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <h3 className="text-2xl font-medium">Payment Options</h3>
@@ -112,17 +102,15 @@ const EditEventItems = () => {
               <div className="ml-auto flex h-9 w-9 items-center justify-center text-zinc-500">
                 <ChevronRight className="h-5 w-5" />
               </div>
-            </button>
+            </Link>
 
-            <button
-              onClick={() => {
-                changeWindow(EditEventWindow.BOOKING_OPTIONS);
-              }}
+            <Link
+              href="booking"
               className="flex items-center gap-2 border-b py-6 hover:bg-brand-25"
             >
               <div className="flex gap-2">
                 <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
-                  <Subtitles className="h-5 w-5" />
+                  <Subtitles className="h-5 w-5 text-brand-500" />
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <h3 className="text-2xl font-medium">Booking Options</h3>
@@ -137,17 +125,15 @@ const EditEventItems = () => {
               <div className="ml-auto flex h-9 w-9 items-center justify-center text-zinc-500">
                 <ChevronRight className="h-5 w-5" />
               </div>
-            </button>
+            </Link>
 
-            <button
-              onClick={() => {
-                changeWindow(EditEventWindow.REMIDNERS);
-              }}
+            <Link
+              href="reminders"
               className="flex items-center gap-2 py-6 hover:bg-brand-25"
             >
               <div className="flex gap-2">
                 <div className="flex h-9 w-9 items-center justify-center text-zinc-500">
-                  <BellRing className="h-5 w-5" />
+                  <BellRing className="h-5 w-5 text-brand-500" />
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <h3 className="text-2xl font-medium">Reminders</h3>
@@ -162,13 +148,19 @@ const EditEventItems = () => {
               <div className="ml-auto flex h-9 w-9 items-center justify-center text-zinc-500">
                 <ChevronRight className="h-5 w-5" />
               </div>
-            </button>
+            </Link>
           </div>
         </div>
       </aside>
-      <main className="flex-1 bg-zinc-100">Hey</main>
+
+      {/* work area */}
+      <div className="flex-1 overflow-y-scroll bg-zinc-100 px-8">
+        <div className="mx-auto h-screen w-full max-w-[900px] py-10">
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default EditEventItems;
+export default Layout;

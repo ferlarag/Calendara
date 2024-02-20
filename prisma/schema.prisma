@@ -30,19 +30,29 @@ enum OnboardingStep {
   DONE
 }
 
+enum FeedbackOpitons {
+  OPTION_A
+  OPTION_B
+  OPTION_C
+  OPTION_D
+}
+
 model User {
-  id               String         @id @unique
-  email            String?        @unique
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  name             String?
-  lastName         String?
-  phoneNumber      String?
-  timezone         String?
-  militaryTime     Boolean        @default(true)
-  preferredLang    String?
-  onboardingStatus OnboardingStep @default(CREATE_WORKSPACE)
-  teamMembers      TeamMember[]
+  id                 String           @id @unique
+  email              String?          @unique
+  pictureUrl         String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  name               String?
+  lastName           String?
+  phoneNumber        String?
+  timezone           String?
+  militaryTime       Boolean          @default(true)
+  preferredLang      String?
+  feedback           FeedbackOpitons?
+  onboardingStatus   OnboardingStep   @default(CREATE_WORKSPACE)
+  teamMembers        TeamMember[]
+  onboardedWorkspace Workspace?
 
   @@index([id])
 }
@@ -51,7 +61,7 @@ model Workspace {
   id                   String        @id @unique @default(cuid())
   ownerID              String
   name                 String
-  link                 String       @unique
+  link                 String        @unique
   scheduleID           String?
   workspaceDescription String?
   location             String?
@@ -65,8 +75,11 @@ model Workspace {
   schedules            Schedule[]
   clients              Client[]
   bookedEvents         BookedEvent[]
+  onboardedUser        User?         @relation(fields: [onboardedUserID], references: [id])
+  onboardedUserID      String?       @unique
 
   @@index([id])
+  @@index([onboardedUserID])
 }
 
 enum Role {

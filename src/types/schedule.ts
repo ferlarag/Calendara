@@ -45,13 +45,13 @@ export const ScheduleSchema = z.object({
 });
 
 export const defaultState: z.infer<typeof ScheduleSchema> = {
-  name: "",
+  name: "Available Hours",
   days: {
     monday: {
       open: true,
       availableHours: {
         opensAt: "09:00",
-        endsAt: "09:15",
+        endsAt: "17:00",
       },
       unavailable: [],
     },
