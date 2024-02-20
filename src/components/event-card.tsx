@@ -62,7 +62,7 @@ const EventCard = ({ card }: CardProps) => {
               }}
             />
             <Link
-              href={`/dashboard/e/${card.id}/edit?origin=${card.workspaceID}`}
+              href={`/dashboard/e/${card.id}/info?origin=${card.workspaceID}`}
               className={buttonVariants({
                 size: "icon",
                 variant: "ghost",

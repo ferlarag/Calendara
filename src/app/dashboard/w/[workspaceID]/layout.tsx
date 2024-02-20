@@ -35,10 +35,10 @@ export default function Layout({ children }: Props) {
             <Loader2 className="h-4 w-4 animate-spin" /> Loading
           </div>
         ) : (
-          <>
+          <div className="mx-auto max-w-[1200px]">
             <NavigationHeadline workspace={data} />
             <div className="h-[calc(100svh-76px)] w-full pb-6">{children}</div>
-          </>
+          </div>
         )}
       </div>
     </div>
