@@ -121,11 +121,11 @@ export const eventRouter = createTRPCRouter({
   updateEvent: privateProcedure
     .input(z.object({ data: EventInformationSchema, eventID: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      try {
-        const { data, eventID } = input;
-        const { db, userID } = ctx;
+      const { data, eventID } = input;
+      const { db, userID } = ctx;
 
-        const { workspaceMember } = await db.$transaction(async (prisma) => {
+      const { workspaceMember, updatedEvent } = await db.$transaction(
+        async (prisma) => {
           const event = await prisma.event.findFirstOrThrow({
             where: {
               id: eventID,
@@ -142,7 +142,7 @@ export const eventRouter = createTRPCRouter({
           });
 
           // update
-          await prisma.event.update({
+          const updatedEvent = await prisma.event.update({
             where: {
               id: eventID,
             },
@@ -150,15 +150,16 @@ export const eventRouter = createTRPCRouter({
               ...data,
             },
           });
-          return { workspaceMember };
-        });
+          return { workspaceMember, updatedEvent };
+        },
+      );
 
-        return {
-          eventID,
-          workspaceID: workspaceMember.workspaceID,
-        };
-      } catch (error) {
-        console.log(error);
-      }
+      if (!workspaceMember || !updatedEvent)
+        throw new TRPCError({ code: "NOT_FOUND" });
+
+      return {
+        eventID,
+        updatedEvent,
+      };
     }),
 });
