@@ -2,16 +2,20 @@
 import React from "react";
 import { buttonVariants } from "../ui/button";
 import { api } from "@/trpc/react";
-import { useOnboarding } from "@/hooks/useOnboarding";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const Feedback = () => {
-  const { changeStep } = useOnboarding();
-  const { isLoading, mutate: finishOnboarding } =
-    api.onboard.getFeedback.useMutation({
-      onSuccess: () => {
-        changeStep("DONE");
-      },
-    });
+  const router = useRouter();
+  const { isLoading, mutate } = api.onboard.getFeedback.useMutation({
+    onSuccess: ({ workspaceID }) => {
+      if (!workspaceID) {
+        router.push("/dashboard");
+      } else {
+        router.push(`/dashboard/w/${workspaceID}/events`);
+      }
+    },
+  });
   return (
     <div className="flex w-full max-w-[500px] flex-col items-center gap-2">
       <div className="flex h-[500px] w-full max-w-[500px] flex-col rounded-md border bg-white p-4">
@@ -26,13 +30,14 @@ const Feedback = () => {
           <div className="h-4 w-4 rounded-full bg-brand-500" />
         </div>
         <button
+          disabled={isLoading}
           onClick={() => {
-            finishOnboarding();
+            mutate();
           }}
           className={buttonVariants()}
           type="submit"
         >
-          Finish
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Finish"}
         </button>
       </div>
     </div>

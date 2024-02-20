@@ -171,20 +171,32 @@ export const onboardRouter = createTRPCRouter({
     }),
   getFeedback: privateProcedure.mutation(async ({ ctx }) => {
     const { db, userID } = ctx;
-    // TODO - save the feedback from the user
 
-    // finish the setup
-    const updatedUser = await db.user.update({
-      where: {
-        id: userID,
+    const { newWorkspace, updatedUser } = await db.$transaction(
+      async (prisma) => {
+        const updatedUser = await prisma.user.update({
+          where: {
+            id: userID,
+          },
+          data: {
+            onboardingStatus: "DONE",
+            feedback: "OPTION_A",
+          },
+        });
+
+        const newWorkspace = await prisma.workspace.findFirst({
+          where: {
+            onboardedUserID: userID,
+          },
+        });
+
+        return { updatedUser, newWorkspace };
       },
-      data: {
-        onboardingStatus: "DONE",
-      },
-    });
+    );
 
-    if (!updatedUser) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    if (!updatedUser || !newWorkspace)
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-    return { sucess: true };
+    return { workspaceID: newWorkspace.id };
   }),
 });
