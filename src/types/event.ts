@@ -84,9 +84,9 @@ export const EventInformationSchema = z.object({
     .transform((str) => str.toLowerCase().replace(/\s+/g, "-")),
   duration: z
     .number()
-    // .transform((value) => parseInt(value))
+    .min(5, { message: "Event must be at least 5min long." })
     .default(30),
-  description: z.string().optional(),
+  description: z.string(),
   locations: z.array(
     z.object({
       type: z.enum(["zoom", "phone", "googleMeets", "inPerson"]),
