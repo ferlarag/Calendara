@@ -30,19 +30,27 @@ enum OnboardingStep {
   DONE
 }
 
+enum FeedbackOpitons {
+  OPTION_A
+  OPTION_B
+  OPTION_C
+  OPTION_D
+}
+
 model User {
-  id                 String         @id @unique
-  email              String?        @unique
+  id                 String           @id @unique
+  email              String?          @unique
   pictureUrl         String?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
   name               String?
   lastName           String?
   phoneNumber        String?
   timezone           String?
-  militaryTime       Boolean        @default(true)
+  militaryTime       Boolean          @default(true)
   preferredLang      String?
-  onboardingStatus   OnboardingStep @default(CREATE_WORKSPACE)
+  feedback           FeedbackOpitons?
+  onboardingStatus   OnboardingStep   @default(CREATE_WORKSPACE)
   teamMembers        TeamMember[]
   onboardedWorkspace Workspace?
 
