@@ -1,3 +1,4 @@
+"use client";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   BellRing,
@@ -12,9 +13,13 @@ import {
   Subtitles,
 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { type PropsWithChildren } from "react";
 
 const Layout = ({ children }: PropsWithChildren) => {
+  const searchParams = useSearchParams();
+  const origin = searchParams.get("origin");
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -22,7 +27,7 @@ const Layout = ({ children }: PropsWithChildren) => {
         <div className="space-y-2 border-b px-8 py-4">
           <div className="flex">
             <Link
-              href={"/dashboard"}
+              href={origin ? `/dashboard/w/${origin}/events` : "/dashboard"}
               className={buttonVariants({
                 variant: "ghost",
                 className: "mr-auto gap-2 text-zinc-500 underline",
