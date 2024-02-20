@@ -14,7 +14,7 @@ const Page = () => {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
             <div className="col-span-3">
-              <Loader2 className="h-5 w-5 animate-ping" />
+              <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : data ? (
             data.map((workspace) => (
